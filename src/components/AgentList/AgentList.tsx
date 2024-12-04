@@ -64,10 +64,19 @@ const AgentList: React.FC<Props> = ({ agents }) => {
                                         {agent.codeSnippet}
                                     </code>
                                 </div>
-                                {/* <code className="text-black">{agent.codeSnippet}</code> */}
                             </td>
                             <td className="px-4 py-2 text-center min-w-[7.5rem]">
-                                <button className="bg-[#0BB489] text-white px-3 py-1 rounded-md hover:bg-[#1fbf96]" onClick={()=> router.push("/playground")}>
+                                <button className="bg-[#0BB489] text-white px-3 py-1 rounded-md hover:bg-[#1fbf96]" onClick={() => {
+                                    // Extract the data-id value
+                                    const match = agent.codeSnippet.match(/data-id="([^"]+)"/);
+                                    const dataId = match ? match[1] : null;
+
+                                    if (dataId) {
+                                        router.push(`/playground?agentId=${dataId}`);
+                                    } else {
+                                        console.error("Data ID not found in codeSnippet.");
+                                    }
+                                }}>
                                     Try it out
                                 </button>
                             </td>

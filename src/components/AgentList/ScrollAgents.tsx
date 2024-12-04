@@ -1,6 +1,8 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { Agent } from "../SPABody/SPABody";
+import { useEffect } from "react";
 
 interface Props {
     agents: Agent[];
@@ -8,6 +10,22 @@ interface Props {
 }
 
 const ScrollAgents: React.FC<Props> = ({ agents, onAgentClick }) => {
+
+    const searchParams = useSearchParams();
+    const agentId = searchParams?.get("agentId");
+
+    useEffect(() => {
+        if (agentId) {
+            // Find the agent with the matching data-id
+            const matchedAgent = agents.find((agent) => {
+                const match = agent.codeSnippet.match(/data-id="([^"]+)"/);
+                return match && match[1] === agentId;
+            });
+            if (matchedAgent) {
+                onAgentClick(matchedAgent);
+            }
+        }
+    }, [agentId, agents]);
 
     return (
         <div className="agent-list w-full bg-white h-auto md:px-[1.2rem] py-5 px-3 bg-white rounded-lg">
