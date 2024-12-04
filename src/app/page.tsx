@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import Header from '@/components/Header/Header';
+import SPABody from '@/components/SPABody/SPABody';
+import AgentList from '@/components/AgentList/AgentList';
+import { useDeveloper } from '@/contexts/DeveloperContext';
 
 type Agent = {
   agentName: string;
@@ -12,12 +16,15 @@ type Agent = {
 const Home = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [developerId, setDeveloperId] = useState<string | null>(null);
+  // const [developerId, setDeveloperId] = useState<string | null>(null);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [agentName, setAgentName] = useState('');
   const [prompt, setPrompt] = useState('');
   const [error, setError] = useState('');
   const [snippet, setSnippet] = useState('');
+  const [created, setCreated] = useState(false);
+  const { developerId, setDeveloperId } = useDeveloper();
+  console.log("Dev Id home:", developerId)
 
   // Authenticate developer
   const handleAuth = async () => {
@@ -43,7 +50,7 @@ const Home = () => {
     if (developerId) {
       fetchAgents(developerId);
     }
-  }, [developerId]);
+  }, [developerId, created]);
 
   // Create a new agent
   const handleCreateAgent = async () => {
@@ -94,10 +101,15 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6 text-black">Your Agents</h1>
-        <table className="w-full table-auto bg-white shadow-md rounded-md mb-6 text-black">
+    <div className="relative min-h-screen w-full pb-10 bg-gray-100 overflow-hidden">
+      <Header />
+      <SPABody developerId={developerId} created={created} setCreated={setCreated} />
+      <div className="agents-section md:px-[7rem] px-3">
+        <AgentList agents={agents} />
+      </div>
+      {/* <div className="max-w-4xl mx-auto"> */}
+      {/* <h1 className="text-2xl font-bold mb-6 text-black">Your Agents</h1> */}
+      {/* <table className="w-full table-auto bg-white shadow-md rounded-md mb-6 text-black">
           <thead className="bg-gray-200">
             <tr>
               <th className="px-4 py-2 text-black">Agent Name</th>
@@ -122,9 +134,9 @@ const Home = () => {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table> */}
 
-        <h2 className="text-xl font-bold mb-4 text-black">Create a New Agent</h2>
+      {/* <h2 className="text-xl font-bold mb-4 text-black">Create a New Agent</h2>
         <input
           type="text"
           placeholder="Agent Name"
@@ -143,14 +155,14 @@ const Home = () => {
           className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
         >
           Create
-        </button>
-        {snippet && (
+        </button> */}
+      {/* {snippet && (
           <div className="mt-6 bg-gray-100 p-4 rounded-md">
             <h3 className="text-lg font-bold mb-2 text-black">Generated Code Snippet</h3>
             <pre className="bg-gray-800 text-white p-3 rounded-md">{snippet}</pre>
           </div>
-        )}
-      </div>
+        )} */}
+      {/* </div> */}
     </div>
   );
 };

@@ -41,44 +41,46 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       await savedAgent.save();
 
       // Prepare data to send to external server
-      const externalServerURL = 'https://example.com/api/endpoint';
+      const externalServerURL = 'https://rnp-master-agent-d2b5etd8cwgzcaer.canadacentral-01.azurewebsites.net/store-agent-spec';
       const requestData = {
         agentId: savedAgent._id.toString(),
         agentSpec: prompt,  // The 'prompt' field is used as agentSpec
       };
 
-      return res.status(201).json({
-        message: 'Agent created successfully and data sent to external server.',
-        codeSnippet,
-        agentId: savedAgent._id,
-      });
+      console.log("savedAgent:", savedAgent)
 
-      // try {
-      //   const externalResponse = await axios.post(externalServerURL, requestData);
+      // return res.status(201).json({
+      //   message: 'Agent created successfully and data sent to external server.',
+      //   codeSnippet,
+      //   agentId: savedAgent._id,
+      // });
 
-      //   // Handle the external server response
-      //   if (externalResponse.status === 200) {
-      //     console.log('Data sent to external server successfully.');
-      //     return res.status(201).json({
-      //       message: 'Agent created successfully and data sent to external server.',
-      //       codeSnippet,
-      //       agentId: savedAgent._id,
-      //     });
-      //   } else {
-      //     // If the response status is not 200, handle failure
-      //     console.error('External server responded with error:', externalResponse.status);
-      //     await savedAgent.deleteOne(); // Delete the agent
-      //     return res.status(500).json({
-      //       error: 'Failed to send data to external server, agent deleted.',
-      //     });
-      //   }
-      // } catch (externalError) {
-      //   console.error('Error sending data to external server:', externalError);
-      //   await savedAgent.deleteOne(); // Delete the agent in case of failure
-      //   return res.status(500).json({
-      //     error: 'Failed to send data to external server, agent deleted.',
-      //   });
-      // }
+      try {
+        const externalResponse = await axios.post(externalServerURL, requestData);
+        console.log("externalResponse:", externalResponse)
+        // Handle the external server response
+        if (externalResponse.status === 200) {
+          console.log('Data sent to external server successfully.');
+          return res.status(201).json({
+            message: 'Agent created successfully and data sent to external server.',
+            codeSnippet,
+            agentId: savedAgent._id,
+          });
+        } else {
+          // If the response status is not 200, handle failure
+          console.error('External server responded with error:', externalResponse.status);
+          await savedAgent.deleteOne(); // Delete the agent
+          return res.status(500).json({
+            error: 'Failed to send data to external server, agent deleted.',
+          });
+        }
+      } catch (externalError) {
+        console.error('Error sending data to external server:', externalError);
+        await savedAgent.deleteOne(); // Delete the agent in case of failure
+        return res.status(500).json({
+          error: 'Failed to send data to external server, agent deleted.',
+        });
+      }
 
     } catch (err) {
       console.error('Error creating agent:', err);
