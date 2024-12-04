@@ -60,10 +60,7 @@ export const useApprove = () => {
                 console.log("Insufficient:", _hasSufficientFunds);
                 return;
             }
-            if (
-                getPaymentNetworkExtension(_requestData)?.id ===
-                Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT
-            ) {
+            if (getPaymentNetworkExtension(_requestData)?.id === Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT) {
                 alert(`ERC20 Request detected. Checking approval...`);
                 const _hasErc20Approval = await hasErc20Approval(
                     _requestData,

@@ -6,6 +6,8 @@ import Header from '@/components/Header/Header';
 import SPABody from '@/components/SPABody/SPABody';
 import AgentList from '@/components/AgentList/AgentList';
 import { useDeveloper } from '@/contexts/DeveloperContext';
+import { useAccount } from 'wagmi';
+import Script from 'next/script';
 
 type Agent = {
   agentName: string;
@@ -25,6 +27,7 @@ const Home = () => {
   const [created, setCreated] = useState(false);
   const { developerId, setDeveloperId } = useDeveloper();
   console.log("Dev Id home:", developerId)
+ const { address} = useAccount();
 
   // Authenticate developer
   const handleAuth = async () => {
@@ -72,6 +75,7 @@ const Home = () => {
   if (!developerId) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <Script id="chatbot" data-agent-id="67500d5fd8f7b664f8bc39e8" data-account-id={address} src="https://script-sepia.vercel.app/ChatBot.js"></Script>
         <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
           <h1 className="text-xl font-bold text-center mb-4 text-black">Login / Register</h1>
           <input
@@ -102,6 +106,7 @@ const Home = () => {
 
   return (
     <div className="relative min-h-screen w-full pb-10 bg-gray-100 overflow-hidden">
+      <Script id="chatbot" data-agent-id="67500d5fd8f7b664f8bc39e8" data-account-id={address} src="https://script-sepia.vercel.app/ChatBot.js"></Script>
       <Header />
       <SPABody developerId={developerId} created={created} setCreated={setCreated} />
       <div className="agents-section md:px-[7rem] px-3">

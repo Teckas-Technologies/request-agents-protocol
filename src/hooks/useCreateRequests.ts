@@ -19,6 +19,7 @@ interface Data {
     storageChain: string;
     dueDate: string;
     reason: string;
+    extra: any;
 }
 
 export enum APP_STATUS {
@@ -116,13 +117,16 @@ export const useCreateRequest = () => {
 
             setStatus(APP_STATUS.REQUEST_CONFIRMED);
             setRequestData(confirmedRequestData);
-            setSuccess(true);
+            console.log("confirmedRequestData", confirmedRequestData)
+            setSuccess(true)
+            return { success: true }
         } catch (error) {
             console.error('Error creating request:', error);
             setError('Failed to create request');
             setStatus(APP_STATUS.ERROR_OCCURRED);
             console.log("Error:", error)
             alert(error);
+            return { success: false }
         } finally {
             setLoading(false);
         }

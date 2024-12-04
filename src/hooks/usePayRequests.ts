@@ -51,18 +51,20 @@ export const usePayRequest = () => {
             // TODO Add a timeout
             while (_requestData.balance?.balance! < _requestData.expectedAmount) {
                 _requestData = await _request.refresh();
-                alert(`balance = ${_requestData.balance?.balance}`);
+                // alert(`balance = ${_requestData.balance?.balance}`);
                 await new Promise((resolve) => setTimeout(resolve, 1000));
             }
-            alert(`payment detected!`);
+            // alert(`payment detected!`);
             setRequestData(_requestData);
             setStatus(APP_STATUS.REQUEST_PAID);
             setSuccess(true);
+            return { success: true }
         } catch (error) {
             console.error('Error creating request:', error);
             setError('Failed to create request');
             console.log("Error:", error)
-            alert(error);
+            return { success: false }
+            // alert(error);
         } finally {
             setLoading(false);
         }
