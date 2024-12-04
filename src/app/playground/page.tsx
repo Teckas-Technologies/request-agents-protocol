@@ -5,7 +5,7 @@ import PlayGround from "@/components/PlayGround/PlayGround";
 import { Agent } from "@/components/SPABody/SPABody";
 import { useDeveloper } from "@/contexts/DeveloperContext";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 
 const PlayGroundPage = () => {
@@ -30,7 +30,9 @@ const PlayGroundPage = () => {
     return (
         <>
             <Header />
-            <PlayGround agents={agents} />
+            <Suspense fallback={<div>Loading...</div>}>
+                <PlayGround agents={agents} />
+            </Suspense>
         </>
     )
 }

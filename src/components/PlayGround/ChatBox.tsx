@@ -5,6 +5,8 @@ import InlineSVG from "react-inlinesvg";
 import "./PlayGround.css"
 import { Agent } from "../SPABody/SPABody";
 import axios from "axios";
+import { useAccount } from "wagmi";
+import { useCreateRequest } from "@/hooks/useCreateRequests";
 
 interface Props {
     agent: Agent | null;
@@ -41,6 +43,8 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
     const [inputValue, setInputValue] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    const { address, isConnected } = useAccount();
+    const { createRequest } = useCreateRequest();
 
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
@@ -77,8 +81,8 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
 
         try {
             const requestBody = {
-                id: "67",
-                prompt: JSON.stringify({ query: inputValue, isWalletConnected: "false" }),
+                id: "68",
+                prompt: JSON.stringify({ query: inputValue, isWalletConnected: isConnected && address ? "true" : "false" }),
                 agentId,
             };
 
@@ -95,6 +99,11 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                 sender: "assistant",
                 message: response.data.data.text, // Assuming API returns { reply: string }
             };
+
+            if(response.data.intent === "finalJson") {
+                // createRequest({})
+                alert("Done")
+            }
 
             setMessages((prev) => [...prev, assistantMessage]); // Add assistant's response
         } catch (error) {
