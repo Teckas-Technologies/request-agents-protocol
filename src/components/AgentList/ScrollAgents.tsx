@@ -56,7 +56,7 @@ const ScrollAgents: React.FC<Props> = ({ agents, onAgentClick }) => {
                                 </div>
                                 <h2 className="text-md text-black dark:text-black truncate-1-lines">{agent.agentName}</h2>
                             </div>
-                            <p className="px-3 text-sm text-zinc-500 truncate-2-lines">{agent.prompt}</p>
+                            <p className="px-3 text-sm text-zinc-500 dark:text-black truncate-2-lines">{agent.prompt}</p>
                         </div>
                     );
                 })}

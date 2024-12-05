@@ -18,7 +18,7 @@ if (!projectId) {
 const metadata = {
     name: 'request-agents',
     description: 'Request Agents',
-    url: 'https://myid-coin.vercel.app/', // origin must match your domain & subdomain
+    url: 'https://request-protocol-bot.vercel.app/', // origin must match your domain & subdomain
     icons: ['images/request-network-logo.png']
 }
 

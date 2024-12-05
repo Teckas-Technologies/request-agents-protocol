@@ -39,7 +39,7 @@ const Popup: React.FC<Props> = ({ codeSnippet, onClose }) => {
                     <h2 className='text-center dark:text-black text-black text-lg font-semibold'>Code Snippet for your Agent!</h2>
                 </div>
                 <div className="bg-gray-100 p-2 rounded-md border border-gray-300 cursor-pointer">
-                    <code className="snippet-content block font-mono whitespace-pre-wrap">
+                    <code className="snippet-content dark:text-black block font-mono whitespace-pre-wrap">
                         {codeSnippet}
                     </code>
                 </div>

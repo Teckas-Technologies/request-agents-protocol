@@ -92,19 +92,19 @@ const SPABody: React.FC<Props> = ({ developerId, created, setCreated }) => {
     return (
         <div className="spa-body w-full h-auto flex flex-wrap md:grid md:grid-cols-5 gap-5 md:px-[1.2rem] px-3 py-5 md:pt-[6.2rem] pt-[5.8rem]">
             <div className="left-doc-content w-full md:col-span-2 py-5 md:px-5 px-3 bg-white rounded-lg">
-                <h1 className="text-xl font-bold mb-4">Steps to get an agent:</h1>
+                <h1 className="text-xl dark:text-black font-bold mb-4">Steps to get an agent:</h1>
                 <h2 className="text-lg dark:text-black font-semibold mb-2">1. Provide the following details:</h2>
                 <ul className="list-disc pl-6 mb-2">
-                    <li>
-                        <strong>Agent Name:</strong> A descriptive name for your agent (e.g., "Invoice Agent").
+                    <li className="dark:text-black">
+                        <strong className="dark:text-black">Agent Name:</strong> A descriptive name for your agent (e.g., "Invoice Agent").
                     </li>
                     {/* <li>
                         <strong>Agent Description:</strong> Briefly describe what the agent will do (e.g., "Manages invoices and payments").
                     </li> */}
-                    <li>
-                        <strong>Agent Prompt:</strong> Instructions for your agent. For example:
+                    <li className="dark:text-black">
+                        <strong className="dark:text-black">Agent Prompt:</strong> Instructions for your agent. For example:
                         <div className="relative bg-gray-100 p-4 mt-2 rounded-md border border-gray-300">
-                            <code className="code-content block font-mono whitespace-pre-wrap">
+                            <code className="code-content block font-mono whitespace-pre-wrap dark:text-black">
                                 You are an assistant to help users to create an invoice and fetch their invoices. If the user wants to create an invoice, use the create-payment-request tool. If the user wants to fetch their invoices, use the fetch-payment-request tool.
                             </code>
                             <div onClick={copyToClipboard} className="copy absolute h-7 w-7 top-2 right-2 border border-zinc-800 flex items-center justify-center rounded-md cursor-pointer">
@@ -116,15 +116,15 @@ const SPABody: React.FC<Props> = ({ developerId, created, setCreated }) => {
                         </div>
                     </li>
                 </ul>
-                <p className="text-base">
+                <p className="text-base dark:text-black">
                     Click <strong>"Submit"</strong> to create your agent.
                 </p>
                 <h2 className="text-lg dark:text-black text-black font-semibold mt-3 mb-1">2. Integrate the agent into your project:</h2>
-                <p className="text-base mb-2">
+                <p className="text-base dark:text-black mb-2">
                     After submitting the form, you'll receive a script to integrate the agent into your platform. Here's an example:
                 </p>
                 <div className="relative bg-gray-100 p-4 rounded-md border border-gray-300 mb-2">
-                    <code className="code-content block font-mono whitespace-pre-wrap">
+                    <code className="code-content dark:text-black block font-mono whitespace-pre-wrap">
                         &lt;script id="chatbot"
                         src="https://script-sepia.vercel.app/ChatBot.js"
                         data-agent-id="&lt;!-- Your Agent Id --&gt;"
@@ -132,7 +132,7 @@ const SPABody: React.FC<Props> = ({ developerId, created, setCreated }) => {
                     </code>
                 </div>
 
-                <p className="text-base">
+                <p className="text-base dark:text-black">
                     Replace the <code>data-account-id</code> with your wallet-connected address.
                 </p>
 
@@ -151,7 +151,7 @@ const SPABody: React.FC<Props> = ({ developerId, created, setCreated }) => {
                 <div className="form-box">
                     <h2 className="text-xl dark:text-black text-left font-bold mb-4 text-black">Create a New Agent</h2>
                     <div className="input-field border p-3 rounded-md border-grey-800">
-                        <label htmlFor="name" className="text-zinc-700">Agent Name</label>
+                        <label htmlFor="name" className="text-zinc-700 dark:text-black">Agent Name</label>
                         <input
                             type="text"
                             name="name"
@@ -163,7 +163,7 @@ const SPABody: React.FC<Props> = ({ developerId, created, setCreated }) => {
                     </div>
                     <br />
                     <div className="input-field border p-3 rounded-md border-grey-800">
-                        <label htmlFor="instructions" className="text-zinc-700">Instructions</label>
+                        <label htmlFor="instructions" className="text-zinc-700 dark:text-black">Instructions</label>
                         <textarea
                             name="instructions"
                             value={prompt}

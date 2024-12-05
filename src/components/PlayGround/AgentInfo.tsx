@@ -30,7 +30,7 @@ const AgentInfo: React.FC<Props> = ({ agent }) => {
 
     return (
         <div className="agent-info w-full h-full bg-white h-auto md:px-[1.2rem] py-5 px-3 bg-white rounded-lg" style={{ height: "calc(100vh - 8rem)" }}>
-            <h1 className="text-xl font-bold mb-3 text-black">Agent Details</h1>
+            <h1 className="text-xl font-bold mb-3 text-black dark:text-black">Agent Details</h1>
             <div className="agent-name border border-grey-800 rounded-lg py-2 px-3">
                 <h2 className="text-md text-black dark:text-black font-semibold">Agent Name:</h2>
                 <p className="text-black">{agent?.agentName}</p>
@@ -44,7 +44,7 @@ const AgentInfo: React.FC<Props> = ({ agent }) => {
             <div className="agent-name border border-grey-800 rounded-lg py-2 px-3 mt-2">
                 <h2 className="text-md dark:text-black text-black font-semibold">Code Snippet:</h2>
                 <div className="bg-gray-100 p-2 rounded-md border border-gray-300 cursor-pointer" onClick={() => copyToClipboard(agent?.codeSnippet || "")}>
-                    <code className="snippet-content block font-mono whitespace-pre-wrap">
+                    <code className="snippet-content dark:text-black block font-mono whitespace-pre-wrap">
                         {agent?.codeSnippet}
                     </code>
                 </div>

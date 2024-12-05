@@ -245,8 +245,13 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                     extra: response.data.data.meta_data.extra
                 })
 
-                if (created) {
-                    setMessages((prev) => [...prev, assistantMessage]);
+                if (created?.success) {
+                    setMessages((prev) => [...prev, {
+                        sender: "assistant", message: `
+                        ${response.data.data.text}
+                        <div hidden>Request Created</div>
+                        <span hidden>${created.data.confirmedRequestData?.requestId.trim()}</span>
+                        ` }]);
                     setIsCreating(false);
                     return;
                 } else {
@@ -493,6 +498,14 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                                     </div>}
                                 </div>
 
+                                {msg.message.includes("Request Created") && <>
+                                    <a href={`https://scan.request.network/request/${getHiddenSpanText(msg.message)}`} target="_blank" rel="noopener noreferrer">
+                                        <div className="approve-btn px-2 py-1 min-w-[5rem] bg-zinc-200 rounded-3xl border-2 border-zinc-200 hover:border-zinc-400 cursor-pointer">
+                                            <h2 className="text-center dark:text-black text-sm">View</h2>
+                                        </div>
+                                    </a>
+                                </>}
+
                                 {msg.message.includes("Payer") && <div className="btns flex flex-col gap-1">
                                     {msg.message.includes("<b>Status:</b> Unpaid") && <>
                                         <div className="pay-btn px-2 py-1 min-w-[5rem] flex items-center justify-center gap-1 bg-[#1fbf96] rounded-3xl border-2 border-zinc-200 hover:border-zinc-400 cursor-pointer" onClick={() => { handlePay(getHiddenSpanText(msg.message)); setActivePayingId(getHiddenSpanText(msg.message)); }} >
@@ -540,7 +553,7 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                             placeholder="Enter your message here..."
-                            className="flex-grow h-8 text-md font-medium border-none outline-none"
+                            className="flex-grow h-8 text-md font-medium dark:text-black border-none outline-none"
                             onKeyDown={(e) => e.key === "Enter" && handleSend()}
                         />
                         <div className={`send-btn ${isLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`} onClick={handleSend}>

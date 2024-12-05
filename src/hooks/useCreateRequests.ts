@@ -43,7 +43,6 @@ export const useCreateRequest = () => {
     const { address, isConnecting, isDisconnected } = useAccount();
     const [status, setStatus] = useState(APP_STATUS.AWAITING_INPUT);
     const [requestData, setRequestData] = useState<Types.IRequestDataWithEvents>();
-    // const { provider } = useProvider();
 
     const createRequest = async (data: Data) => {
         if (!walletClient) {
@@ -51,6 +50,7 @@ export const useCreateRequest = () => {
             setLoading(false);
             return;
         }
+        console.log("WALLET CLI:", walletClient)
         setLoading(true);
         setError(null);
         setSuccess(null);
@@ -125,14 +125,14 @@ export const useCreateRequest = () => {
             setRequestData(confirmedRequestData);
             console.log("confirmedRequestData", confirmedRequestData)
             setSuccess(true)
-            return { success: true }
+            return { success: true, data: { confirmedRequestData }  }
         } catch (error) {
             console.error('Error creating request:', error);
             setError('Failed to create request');
             setStatus(APP_STATUS.ERROR_OCCURRED);
             console.log("Error:", error)
             alert(error);
-            return { success: false }
+            return { success: false, data: {} }
         } finally {
             setLoading(false);
         }

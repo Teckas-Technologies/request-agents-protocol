@@ -80,11 +80,20 @@ const Home = () => {
     }
   };
 
+  const clearChache = () => {
+    localStorage.setItem('developerId', "");
+  }
+
   if (!developerId) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         {/* <Script id="chatbot" data-agent-id="67500d5fd8f7b664f8bc39e8" data-account-id={address} src="https://script-sepia.vercel.app/ChatBot.js"></Script> */}
-        <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+        <div className="relative w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+          <div className="absolute top-[-3rem] right-0">
+            <div className="clear-cache-btn border-2 border-[#0BB489] rounded-3xl px-4 py-1 cursor-pointer" onClick={clearChache}>
+              <h2 className='text-[#0BB489] font-semibold'>Clear Cache</h2>
+            </div>
+          </div>
           <h1 className="text-xl font-bold text-center mb-4 text-black">Login / Register</h1>
           <input
             type="email"
