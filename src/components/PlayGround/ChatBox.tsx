@@ -17,6 +17,7 @@ import { useEthersV5Signer } from "@/hooks/use-ethers-v5-signer";
 import { usePayRequest } from "@/hooks/usePayRequests";
 import Toast from "../Toast";
 import { parseUnits } from "viem";
+import Copied from "../Copied";
 
 interface Props {
     agent: Agent | null;
@@ -28,6 +29,7 @@ interface Message {
 }
 
 const ChatBox: React.FC<Props> = ({ agent }) => {
+    const [copied, setCopied] = useState(false);
     const [agentId, setAgentId] = useState<string | null>(null);
     const [messages, setMessages] = useState<Message[]>([
         { sender: "assistant", message: "Hello, how can I assist you?" },
@@ -100,6 +102,23 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
             }, 3000)
         }
     }, [paid])
+
+    useEffect(() => {
+        if (copied) {
+            setTimeout(() => {
+                setCopied(false);
+            }, 3000)
+        }
+    }, [copied])
+
+    const copyToClipboard = (snippet: string) => {
+        navigator.clipboard.writeText(snippet || "").then(() => {
+            // alert("Copied to clipboard!");
+            setCopied(true);
+        }).catch(err => {
+            console.error("Failed to copy text: ", err);
+        });
+    };
 
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
@@ -413,7 +432,7 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                         </div>
                         <h2>{agent?.agentName}</h2>
                     </div>
-                    <div className="share border border-zinc-900 rounded-md p-1 cursor-pointer">
+                    <div className="share border border-zinc-900 rounded-md p-1 cursor-pointer" onClick={() => copyToClipboard(agent?.codeSnippet || "")}>
                         <InlineSVG
                             src="images/3-dots.svg"
                             className="fill-current w-5 h-5 text-zinc-900"
@@ -524,6 +543,7 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                 message={toastMessage}
                 onClose={() => setToast(false)}
             />}
+            {copied && <Copied />}
         </div>
     )
 }

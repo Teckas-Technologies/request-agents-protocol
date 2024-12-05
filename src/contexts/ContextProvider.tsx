@@ -16,10 +16,10 @@ if (!projectId) {
 
 // Set up metadata
 const metadata = {
-    name: 'myid-coin',
-    description: 'MYID Coin',
+    name: 'request-agents',
+    description: 'Request Agents',
     url: 'https://myid-coin.vercel.app/', // origin must match your domain & subdomain
-    icons: ['https://myid-coin.vercel.app/images/logo-mobile.png']
+    icons: ['images/request-network-logo.png']
 }
 
 // Create the modal

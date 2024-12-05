@@ -55,6 +55,7 @@ const Header: React.FC<Props> = ({created}) => {
     }
 
     const handleViewAccount = () => {
+        // alert("Clicked")
         open({ view: 'Account' });
     }
     return (
