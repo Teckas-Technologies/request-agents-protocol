@@ -70,8 +70,8 @@ const AgentList: React.FC<Props> = ({ agents }) => {
                             </td>
                             <td className="px-4 py-2 text-center min-w-[7.5rem]">
                                 <button className="bg-[#0BB489] text-white px-3 py-1 rounded-md hover:bg-[#1fbf96]" onClick={() => {
-                                    // Extract the data-id value
-                                    const match = agent.codeSnippet.match(/data-id="([^"]+)"/);
+                                    // Extract the data-agent-id value
+                                    const match = agent.codeSnippet.match(/data-agent-id="([^"]+)"/);
                                     const dataId = match ? match[1] : null;
 
                                     if (dataId) {

@@ -36,7 +36,7 @@ const Popup: React.FC<Props> = ({ codeSnippet, onClose }) => {
                     />
                 </div>
                 <div className="text">
-                    <h2 className='text-center text-lg font-semibold'>Code Snippet for your Agent!</h2>
+                    <h2 className='text-center text-black text-lg font-semibold'>Code Snippet for your Agent!</h2>
                 </div>
                 <div className="bg-gray-100 p-2 rounded-md border border-gray-300 cursor-pointer">
                     <code className="snippet-content block font-mono whitespace-pre-wrap">
@@ -48,7 +48,7 @@ const Popup: React.FC<Props> = ({ codeSnippet, onClose }) => {
                         onClick={() => copyToClipboard(codeSnippet)}
                         className={`w-auto bg-[#0BB489] text-white py-2 px-5 rounded-md hover:bg-[#1fbf96]`}
                     >
-                        <h2 className="font-semibold">Copy</h2>
+                        <h2 className="font-semibold text-white">Copy</h2>
                     </button>
                 </div>
             </div>

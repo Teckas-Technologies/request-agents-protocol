@@ -134,12 +134,12 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
 
     useEffect(() => {
         if (agent?.codeSnippet) {
-            // Extract data-id using a regular expression
-            const match = agent.codeSnippet.match(/data-id="([^"]+)"/);
+            // Extract data-agent-id using a regular expression
+            const match = agent.codeSnippet.match(/data-agent-id="([^"]+)"/);
             if (match) {
                 setAgentId(match[1]); // Store the extracted value
             } else {
-                setAgentId(null); // Reset if no data-id is found
+                setAgentId(null); // Reset if no data-agent-id is found
             }
         } else {
             setAgentId(null); // Reset if no agent or codeSnippet
@@ -291,6 +291,28 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                 }) || [];
                 console.log("Requests:", requests);
                 setMessages((prev) => [...prev, ...formattedMessages]);
+            } else if (response.data.data.intent === "getReceiverId") {
+                const text = response.data.data.text;
+                if (!text) {
+                    setMessages((prev) => [...prev, { sender: "assistant", message: "Sure, let's start creating your payment request. Please provide the receiver's account starting with '0x'." }]);
+                } else if (typeof text === "string" && (text.toLowerCase().includes("following") || text.toLowerCase().includes(":") || !text)) {
+                    setMessages((prev) => [...prev, { sender: "assistant", message: "Sure, let's start creating your payment request. Please provide the receiver's account starting with '0x'." }]);
+                } else {
+                    setMessages((prev) => [...prev, assistantMessage]);
+                }
+            } else if (!response.data.data.text) {
+                if (response.data.data.intent === "getCurrency") {
+                    setMessages((prev) => [...prev, { sender: "assistant", message: "Great! Now, please specify the currency you want to use for the payment request." }]);
+                } else if (response.data.data.intent === "getAmount") {
+                    setMessages((prev) => [...prev, { sender: "assistant", message: "Perfect! Next, please enter the amount for the payment request." }]);
+                } else if (response.data.data.intent === "getReason") {
+                    setMessages((prev) => [...prev, { sender: "assistant", message: "Got it! Now, please provide the reason for this payment request." }]);
+                } else if (response.data.data.intent === "getExtradetails" || response.data.data.intent === "getExtraDetailName1" || response.data.data.intent === "getExtraDetailName2") {
+                    setMessages((prev) => [...prev, { sender: "assistant", message: "Do you have any additional details for this payment request?" }]);
+                } else {
+                    setMessages((prev) => [...prev, { sender: "assistant", message: "I'm going to sleep. Wait for 5 minutes!" }]);
+                }
+
             } else {
                 setMessages((prev) => [...prev, assistantMessage]);
             }

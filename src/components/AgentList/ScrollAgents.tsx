@@ -19,9 +19,9 @@ const ScrollAgents: React.FC<Props> = ({ agents, onAgentClick }) => {
 
     useEffect(() => {
         if (agentId) {
-            // Find the agent with the matching data-id
+            // Find the agent with the matching data-agent-id
             const matchedAgent = agents.find((agent) => {
-                const match = agent.codeSnippet.match(/data-id="([^"]+)"/);
+                const match = agent.codeSnippet.match(/data-agent-id="([^"]+)"/);
                 return match && match[1] === agentId;
             });
             if (matchedAgent) {
@@ -41,8 +41,8 @@ const ScrollAgents: React.FC<Props> = ({ agents, onAgentClick }) => {
             <h1 className="text-xl font-bold mb-3 text-black">My Agents</h1>
             <div className="agents-scroll-list w-full flex flex-col gap-2 overflow-y-scroll border border-grey-800 rounded-lg p-2" style={{ height: "calc(100vh - 13.5rem)" }}>
                 {agents.map((agent, index) => {
-                    const match1 = agent.codeSnippet.match(/data-id="([^"]+)"/);
-                    const match2 = selectedAgent?.codeSnippet.match(/data-id="([^"]+)"/);
+                    const match1 = agent.codeSnippet.match(/data-agent-id="([^"]+)"/);
+                    const match2 = selectedAgent?.codeSnippet.match(/data-agent-id="([^"]+)"/);
                     const isSelected = match1 && match2 && match1[1] === match2[1];
                     return (
                         <div
@@ -54,7 +54,7 @@ const ScrollAgents: React.FC<Props> = ({ agents, onAgentClick }) => {
                                 <div className="rn-logo w-[2rem] h-[2rem] p-2 bg-gray-200 rounded-full">
                                     <img src="images/logo-sm.svg" alt="logo" className="w-full h-full object-cover" />
                                 </div>
-                                <h2 className="text-md truncate-1-lines">{agent.agentName}</h2>
+                                <h2 className="text-md text-black truncate-1-lines">{agent.agentName}</h2>
                             </div>
                             <p className="px-3 text-sm text-zinc-500 truncate-2-lines">{agent.prompt}</p>
                         </div>
