@@ -125,18 +125,16 @@ const SPABody: React.FC<Props> = ({ developerId, created, setCreated }) => {
                 </p>
                 <div className="relative bg-gray-100 p-4 rounded-md border border-gray-300 mb-2">
                     <code className="code-content dark:text-black block font-mono whitespace-pre-wrap">
-                        &lt;script id="chatbot"
+                        &lt;Script id="chatbot"
                         src="https://script-sepia.vercel.app/ChatBot.js"
-                        data-agent-id="&lt;!-- Your Agent Id --&gt;"
-                        data-account-id="&lt;!-- Your Wallet Connected Address --&gt;"
-                        data-wallet-client="&lt;!-- Your Stringified Wallet Client --&gt;"&gt;&lt;/script&gt;
+                        data-agent-id="&lt;!-- Your Agent Id --&gt;"&gt;&lt;/Script&gt;
                     </code>
                 </div>
 
                 <p className="text-base dark:text-black">
                     Replace the <code>data-agent-id</code> with your agent id. <br />
-                    Replace the <code>data-account-id</code> with your wallet-connected address. <br />
-                    Replace the <code>data-wallet-client</code> with your walletClient variable as a stringified JSON.
+                    {/* Replace the <code>data-account-id</code> with your wallet-connected address. <br />
+                    Replace the <code>data-wallet-client</code> with your walletClient variable as a stringified JSON. */}
                 </p>
 
                 {/* <h2 className="text-lg font-semibold mt-6 mb-2">3. Verify Integration:</h2>
