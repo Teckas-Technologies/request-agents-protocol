@@ -32,8 +32,8 @@ const PlayGroundPage = () => {
 
     return (
         <>
-            <Header />
-            <Script id="chatbot" data-agent-id="67500d5fd8f7b664f8bc39e8" data-account-id={address} src="https://script-sepia.vercel.app/ChatBot.js"></Script>
+            <Header created={true} />
+            {/* <Script id="chatbot" data-agent-id="67500d5fd8f7b664f8bc39e8" data-account-id={address} src="https://script-sepia.vercel.app/ChatBot.js"></Script> */}
             <Suspense fallback={<div>Loading...</div>}>
                 <PlayGround agents={agents} />
             </Suspense>

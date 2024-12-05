@@ -28,24 +28,6 @@ interface Message {
 }
 
 const ChatBox: React.FC<Props> = ({ agent }) => {
-    // const messages: Message[] = [
-    //     { sender: "assistant", message: "Hello, how can I assist you?" },
-    //     { sender: "user", message: "Hi! I need help with my invoice." },
-    //     { sender: "assistant", message: "Sure! What do you need assistance with?" },
-    //     { sender: "user", message: "I need to add an item to my invoice." },
-    //     { sender: "assistant", message: "No problem. What item would you like to add?" },
-    //     { sender: "user", message: "I want to add a laptop with a price of $1200." },
-    //     { sender: "assistant", message: "Got it. Would you like to add any description for the item?" },
-    //     { sender: "user", message: "Yes, please add 'High-performance gaming laptop' as the description." },
-    //     { sender: "assistant", message: "The item has been added. Anything else you'd like to modify?" },
-    //     { sender: "user", message: "Yes, can you apply a 10% discount to the item?" },
-    //     { sender: "assistant", message: "Sure! The discount has been applied. The new price is $1080." },
-    //     { sender: "user", message: "Great! Can you also add a warranty option?" },
-    //     { sender: "assistant", message: "Done! I've added a 2-year warranty for $100. Anything else?" },
-    //     { sender: "user", message: "No, that's all for now. Thanks for your help!" },
-    //     { sender: "assistant", message: "You're welcome! Let me know if you need anything else." }
-    // ];
-
     const [agentId, setAgentId] = useState<string | null>(null);
     const [messages, setMessages] = useState<Message[]>([
         { sender: "assistant", message: "Hello, how can I assist you?" },
@@ -55,7 +37,6 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
     const [isCreating, setIsCreating] = useState(false);
     const [isApproving, setIsApproving] = useState(false);
     const [isPaying, setIsPaying] = useState(false);
-    const [activePayingId, setActivePayingId] = useState("");
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
     const { address, isConnected } = useAccount();
     const provider = useEthersV5Provider();
@@ -70,7 +51,27 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
 
     const [sessionId, setSessionId] = useState<string | null>(null);
 
+    const [activePayingId, setActivePayingId] = useState("");
     const [paid, setPaid] = useState(false);
+
+    useEffect(() => {
+        if (activePayingId && paid) {
+            setMessages((prevMessages) =>
+                prevMessages.map((msg) => {
+                    if (msg.message.includes(`<span hidden>${activePayingId}</span>`)) {
+                        // Update the status to Paid
+                        const updatedMessage = msg.message.replace(
+                            `<b>Status:</b> Unpaid`,
+                            `<b>Status:</b> Paid`
+                        );
+
+                        return { ...msg, message: updatedMessage };
+                    }
+                    return msg;
+                })
+            );
+        }
+    }, [paid]);
 
     // Function to generate a unique session ID
     const generateSessionId = (agentId: string) => {
@@ -107,7 +108,9 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
     };
 
     useEffect(() => {
-        scrollToBottom(); // Automatically scroll to the bottom when messages change
+        if (!paid) {
+            scrollToBottom();
+        }
     }, [messages]);
 
     useEffect(() => {
@@ -185,6 +188,8 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                     ([key, curr]) => curr.symbol.toLowerCase() === currencySymbol.toLowerCase() && curr.chainId === 11155111
                 )?.[0]; // Extract the key from the entry
 
+                console.log("currencyKey", currencyKey)
+
                 if (!currencyKey) {
                     setMessages((prev) => [...prev, { sender: "assistant", message: "Unsupported currency!" }]);
                     return;
@@ -208,11 +213,13 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                 setMessages((prev) => [...prev, { sender: "assistant", message: "Creating your request!" }]);
                 setIsCreating(true);
 
+                console.log("amount", response.data.data.meta_data.amount.trim(),);
+
                 const created = await createRequest({
                     recipientAddress: address.trim() || "",
                     currency: currencyKey.trim(),
                     payerAddress: payerIdentity.trim(),
-                    amount: parseUnits(response.data.data.meta_data.amount.trim(), 6).toString(),
+                    amount: response.data.data.meta_data.amount.trim(),
                     storageChain: "11155111",
                     dueDate: formattedDueDate,
                     reason: response.data.data.meta_data.reason,
@@ -285,12 +292,6 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
         return match ? match[1] : ''; // Return the extracted text or empty string if not found
     }
 
-    const getHiddenDivText = (message: string) => {
-        const regex = /<div hidden>(.*?)<\/div>/; // Regex to match the text inside <span hidden>
-        const match = message.match(regex);
-        return match ? match[1] : ''; // Return the extracted text or empty string if not found
-    }
-
     const handleApprove = async (requestData: Types.IRequestData) => {
         setIsApproving(true);
         try {
@@ -325,32 +326,34 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                             const approvalTx = await approveErc20(requestData, signer);
                             await approvalTx.wait(2);
                         } catch (approvalError) {
-                            setSuccess(false);
-                            setToastMessage("ERC20 Approval Failed!");
-                            setToast(true);
+                            // setSuccess(false);
+                            // setToastMessage("ERC20 Approval Failed!");
+                            // setToast(true);
                             console.error("Error during ERC20 approval:", approvalError);
+                            return;
                         }
                     }
                 } catch (approvalCheckError) {
-                    setSuccess(false);
-                    setToastMessage("Can't find approval!");
-                    setToast(true);
+                    // setSuccess(false);
+                    // setToastMessage("Can't find approval!");
+                    // setToast(true);
                     console.error("Error checking ERC20 approval:", approvalCheckError);
+                    return;
                 }
             }
         } catch (error) {
             console.error("Error in handleApprove:", error);
-            setSuccess(false);
-            setToastMessage("Approval Failed!");
-            setToast(true);
+            // setSuccess(false);
+            // setToastMessage("Approval Failed!");
+            // setToast(true);
         } finally {
             setIsApproving(false);
         }
     };
 
     const handlePay = async (requestId: string) => {
+        setActivePayingId(requestId);
         try {
-
             const requestData = await fetchSingleRequest(requestId);
             if (!requestData) {
                 setSuccess(false);
@@ -365,7 +368,7 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                 // console.error("Error in handleApprove:", approveError);
                 setIsApproving(false);
                 setSuccess(false);
-                setToastMessage("Approval failed!");
+                setToastMessage("Payment approval failed!");
                 setToast(true);
                 return;
             }
@@ -386,9 +389,9 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
             } catch (paymentError) {
                 console.error("Error in payment:", paymentError);
                 setIsPaying(false);
-                setSuccess(false);
-                setToastMessage("Payment failed!");
-                setToast(true);
+                // setSuccess(false);
+                // setToastMessage("Payment failed!");
+                // setToast(true);
             }
         } catch (error) {
             console.error("Error in handlePay:", error);
@@ -400,35 +403,8 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
         }
     };
 
-
-    const isApproved = async (requestId: string) => {
-        const requestData = await fetchSingleRequest(requestId);
-
-        if (!requestData) {
-            alert("Request Id Not Valid");
-            return;
-        }
-
-        if (getPaymentNetworkExtension(requestData)?.id === Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT) {
-            alert(`ERC20 Request detected. Checking approval...`);
-            const _hasErc20Approval = await hasErc20Approval(
-                requestData,
-                address as string,
-                provider,
-            );
-            alert(`_hasErc20Approval = ${_hasErc20Approval}`);
-            if (!_hasErc20Approval) {
-                return false;
-            }
-            if (_hasErc20Approval) {
-                return true;
-            }
-        }
-    }
-
-
     return (
-        <div className="chat-box w-full h-full bg-white h-auto md:px-[1.2rem] py-5 px-3 bg-white rounded-lg">
+        <div className="chat-box w-full h-full bg-white h-auto md:px-[1.2rem] py-5 px-3 bg-white rounded-lg" style={{ height: "calc(100vh - 8rem)" }}>
             <div className="chat w-full h-full flex flex-col gap-0" style={{ height: "calc(100vh - 11rem)" }}>
                 <div className="top-chat w-full flex justify-between items-center h-[3rem] py-2">
                     <div className="agent-info flex items-center gap-2">
@@ -446,58 +422,73 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                 </div>
                 <div className="messages w-full pt-2 flex-grow overflow-y-scroll overflow-x-hidden">
                     {messages.map((msg, index) => (
-                        <div key={index} className={`whole-div w-full flex items-center gap-1 ${msg.sender === "user" ? "justify-end" : "justify-start"} px-3`}>
-                            <div className={`relative message ${msg.sender} p-2 mb-2 flex items-center gap-1 rounded-lg max-w-xs ${msg.sender === "user" ? "bg-zinc-300" : "bg-[#1fbf96]"}`}>
-                                {isCreating && index === messages.length - 1 && msg.sender === "assistant" && (
-                                    <div className="loading flex items-center">
-                                        <div role="status">
-                                            <svg aria-hidden="true" className="inline w-4 h-4 text-gray-200 animate-spin dark:text-gray-600 fill-gray-600 dark:fill-gray-300" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
-                                                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
-                                            </svg>
-                                            <span className="sr-only">Loading...</span>
-                                        </div>
-                                    </div>
-                                )}
-                                <p className={`text-sm ${msg.sender === "assistant" ? "text-white" : "text-black"}`} dangerouslySetInnerHTML={{ __html: msg.message }}></p>
-                                {msg.sender === "assistant" ? <div className="absolute top-[-4px] left-[-7px]">
-                                    <InlineSVG
-                                        src="images/send.svg"
-                                        style={{ transform: 'rotate(245deg)' }}
-                                        className="fill-current w-5 h-5 text-[#1fbf96]"
-                                    />
-                                </div> : <div className="absolute top-[-4px] right-[-7px]">
-                                    <InlineSVG
-                                        src="images/send.svg"
-                                        style={{ transform: 'rotate(23deg)' }}
-                                        className="fill-current w-5 h-5 text-zinc-300"
-                                    />
-                                </div>}
-                            </div>
-                            {msg.message.includes("Payer") && <div className="btns flex flex-col gap-1">
-                                {msg.message.includes("<b>Status:</b> Unpaid") && <>
-                                    <div className="pay-btn px-2 py-1 min-w-[5rem] flex items-center justify-center gap-1 bg-[#1fbf96] rounded-3xl border-2 border-zinc-200 hover:border-zinc-400 cursor-pointer" onClick={() => { handlePay(getHiddenSpanText(msg.message)); setActivePayingId(getHiddenSpanText(msg.message)); }} >
-                                        {(isPaying || isApproving) && activePayingId === getHiddenSpanText(msg.message) && <div className="loading flex items-center">
+                        <>
+                            <div key={index} className={`whole-div w-full flex items-center gap-1 ${msg.sender === "user" ? "justify-end" : "justify-start"} px-3`}>
+                                <div className={`relative message ${msg.sender} p-2 mb-2 flex items-center gap-1 rounded-lg max-w-xs ${msg.sender === "user" ? "bg-zinc-300" : "bg-[#1fbf96]"}`}>
+                                    {isCreating && index === messages.length - 1 && msg.sender === "assistant" && (
+                                        <div className="loading flex items-center">
                                             <div role="status">
-                                                <svg aria-hidden="true" className="inline w-3.5 h-3.5 text-white animate-spin dark:text-gray-600 fill-gray-600 dark:fill-gray-300" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <svg aria-hidden="true" className="inline w-4 h-4 text-gray-200 animate-spin dark:text-gray-600 fill-gray-600 dark:fill-gray-300" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
                                                     <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
                                                 </svg>
                                                 <span className="sr-only">Loading...</span>
                                             </div>
-                                        </div>}
-                                        <h2 className="text-center text-sm">{isPaying && activePayingId === getHiddenSpanText(msg.message) ? "Paying.." : isApproving && activePayingId === getHiddenSpanText(msg.message) ? "Approving.." : "Pay"}</h2>
-                                    </div>
-                                </>}
-                                {msg.message.includes("<b>Status:</b> Paid") && <>
-                                    <a href={`https://scan.request.network/request/${getHiddenSpanText(msg.message)}`} target="_blank" rel="noopener noreferrer">
-                                        <div className="approve-btn px-2 py-1 min-w-[5rem] bg-zinc-200 rounded-3xl border-2 border-zinc-200 hover:border-zinc-400 cursor-pointer">
-                                            <h2 className="text-center text-sm">View</h2>
                                         </div>
-                                    </a>
-                                </>}
+                                    )}
+                                    <p className={`text-sm ${msg.sender === "assistant" ? "text-white" : "text-black"}`} dangerouslySetInnerHTML={{ __html: msg.message }}></p>
+                                    {msg.sender === "assistant" ? <div className="absolute top-[-4px] left-[-7px]">
+                                        <InlineSVG
+                                            src="images/send.svg"
+                                            style={{ transform: 'rotate(245deg)' }}
+                                            className="fill-current w-5 h-5 text-[#1fbf96]"
+                                        />
+                                    </div> : <div className="absolute top-[-4px] right-[-7px]">
+                                        <InlineSVG
+                                            src="images/send.svg"
+                                            style={{ transform: 'rotate(23deg)' }}
+                                            className="fill-current w-5 h-5 text-zinc-300"
+                                        />
+                                    </div>}
+                                </div>
+
+                                {msg.message.includes("Payer") && <div className="btns flex flex-col gap-1">
+                                    {msg.message.includes("<b>Status:</b> Unpaid") && <>
+                                        <div className="pay-btn px-2 py-1 min-w-[5rem] flex items-center justify-center gap-1 bg-[#1fbf96] rounded-3xl border-2 border-zinc-200 hover:border-zinc-400 cursor-pointer" onClick={() => { handlePay(getHiddenSpanText(msg.message)); setActivePayingId(getHiddenSpanText(msg.message)); }} >
+                                            {(isPaying || isApproving) && activePayingId === getHiddenSpanText(msg.message) && <div className="loading flex items-center">
+                                                <div role="status">
+                                                    <svg aria-hidden="true" className="inline w-3.5 h-3.5 text-white animate-spin dark:text-gray-600 fill-gray-600 dark:fill-gray-300" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                                                        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                                                    </svg>
+                                                    <span className="sr-only">Loading...</span>
+                                                </div>
+                                            </div>}
+                                            <h2 className="text-center text-sm">{isPaying && activePayingId === getHiddenSpanText(msg.message) ? "Paying.." : isApproving && activePayingId === getHiddenSpanText(msg.message) ? "Approving.." : "Pay"}</h2>
+                                        </div>
+                                    </>}
+                                    {msg.message.includes("<b>Status:</b> Paid") && <>
+                                        <a href={`https://scan.request.network/request/${getHiddenSpanText(msg.message)}`} target="_blank" rel="noopener noreferrer">
+                                            <div className="approve-btn px-2 py-1 min-w-[5rem] bg-zinc-200 rounded-3xl border-2 border-zinc-200 hover:border-zinc-400 cursor-pointer">
+                                                <h2 className="text-center text-sm">View</h2>
+                                            </div>
+                                        </a>
+                                    </>}
+                                </div>}
+                            </div>
+                            {isLoading && index === messages.length - 1 && !isCreating && <div className={`whole-div w-full flex items-center gap-1 justify-start px-3`}>
+                                <div className={`relative message p-2 mb-2 flex items-center gap-1 rounded-lg max-w-xs bg-[#1fbf96]`}>
+                                    <p className={`text-sm text-white`}>Typing...</p>
+                                    <div className="absolute top-[-4px] left-[-7px]">
+                                        <InlineSVG
+                                            src="images/send.svg"
+                                            style={{ transform: 'rotate(245deg)' }}
+                                            className="fill-current w-5 h-5 text-[#1fbf96]"
+                                        />
+                                    </div>
+                                </div>
                             </div>}
-                        </div>
+                        </>
                     ))}
                     <div ref={messagesEndRef} />
                 </div>

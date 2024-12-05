@@ -59,10 +59,16 @@ export const useCreateRequest = () => {
             const signatureProvider = new Web3SignatureProvider(walletClient);
             const requestClient = new RequestNetwork({
                 nodeConnectionConfig: {
-                    baseURL: storageChains.get(data.storageChain)!.gateway,
+                    baseURL: 'https://sepolia.gateway.request.network/'
                 },
                 signatureProvider,
             });
+
+            console.log("defauls decimals", currencies.get(data.currency)!.decimals,)
+            console.log("Parsed currency:", parseUnits(
+                data.amount,
+                currencies.get(data.currency)!.decimals
+            ).toString())
 
             const requestCreateParameters: Types.ICreateRequestParameters = {
                 requestInfo: {
@@ -73,7 +79,7 @@ export const useCreateRequest = () => {
                     },
                     expectedAmount: parseUnits(
                         data.amount,
-                        currencies.get(data.currency)!.decimals,
+                         currencies.get(data.currency)!.decimals
                     ).toString(),
                     payee: {
                         type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
@@ -93,8 +99,8 @@ export const useCreateRequest = () => {
                 contentData: {
                     reason: data.reason,
                     dueDate: data.dueDate,
-                    builderId: "request-network",
-                    createdWith: "CodeSandbox",
+                    builderId: "teckas-technologies",
+                    createdWith: "MasterAgent",
                 },
                 signer: {
                     type: Types.Identity.TYPE.ETHEREUM_ADDRESS,

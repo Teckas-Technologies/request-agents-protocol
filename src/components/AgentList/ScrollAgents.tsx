@@ -28,9 +28,9 @@ const ScrollAgents: React.FC<Props> = ({ agents, onAgentClick }) => {
     }, [agentId, agents]);
 
     return (
-        <div className="agent-list w-full bg-white h-auto md:px-[1.2rem] py-5 px-3 bg-white rounded-lg">
+        <div className="agent-list w-full bg-white md:px-[1.2rem] py-5 px-3 bg-white rounded-lg" style={{ height: "calc(100vh - 8rem)" }}>
             <h1 className="text-xl font-bold mb-3 text-black">My Agents</h1>
-            <div className="agents-scroll-list w-full flex flex-col gap-2 overflow-y-scroll border border-grey-800 rounded-lg p-2" style={{ height: "calc(100vh - 13.5rem)" }}>
+            <div className="agents-scroll-list w-full flex flex-col gap-2 overflow-y-scroll border border-grey-800 rounded-lg p-2" style={{ height: "calc(100vh - 13.5rem)" }}> {/** style={{ height: "calc(100vh - 13.5rem)" }} */}
                 {agents.map((agent, index) => (
                     <div key={index} onClick={() => onAgentClick(agent)} className="agent border py-2 border-grey-800 rounded-lg cursor-pointer">
                         <div className="top px-2 pb-1 flex items-center gap-2">

@@ -31,12 +31,12 @@ export default function RootLayout({
   return (
     <html lang="en">
     <head>
-    <Script id="chatbot" data-agent-id="67500d5fd8f7b664f8bc39e8" data-account-id={"0xFf43E33C40276FEEff426C5448cF3AD9df6b5741"} src="https://script-sepia.vercel.app/ChatBot.js"></Script>
+    {/* <Script id="chatbot" data-agent-id="67500d5fd8f7b664f8bc39e8" data-account-id={"0xFf43E33C40276FEEff426C5448cF3AD9df6b5741"} src="https://script-sepia.vercel.app/ChatBot.js"></Script> */}
     </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-            <Script id="chatbot" data-agent-id="67500d5fd8f7b664f8bc39e8" data-account-id={"0xFf43E33C40276FEEff426C5448cF3AD9df6b5741"} src="https://script-sepia.vercel.app/ChatBot.js"></Script>
+            {/* <Script id="chatbot" data-agent-id="67500d5fd8f7b664f8bc39e8" data-account-id={"0xFf43E33C40276FEEff426C5448cF3AD9df6b5741"} src="https://script-sepia.vercel.app/ChatBot.js"></Script> */}
         <ContextProvider cookies={cookies}>
           <DeveloperProvider>
             {children}

@@ -105,7 +105,7 @@ const SPABody: React.FC<Props> = ({ developerId, created, setCreated }) => {
                         <strong>Agent Prompt:</strong> Instructions for your agent. For example:
                         <div className="relative bg-gray-100 p-4 mt-2 rounded-md border border-gray-300">
                             <code className="code-content block font-mono whitespace-pre-wrap">
-                                You are an assistant to help users to create an invoice and fetch their invoices. If the user wants to create an invoice, use the create-payment-request tool. If the user wants to fetch their invoices, use the fetch-payment-request tool. extra details are dueDate and addressOfUser. Collect these details from the user to create invoice.
+                                You are an assistant to help users to create an invoice and fetch their invoices. If the user wants to create an invoice, use the create-payment-request tool. If the user wants to fetch their invoices, use the fetch-payment-request tool.
                             </code>
                             <div onClick={copyToClipboard} className="copy absolute h-7 w-7 top-2 right-2 border border-zinc-800 flex items-center justify-center rounded-md cursor-pointer">
                                 <InlineSVG

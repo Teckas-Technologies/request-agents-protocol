@@ -29,7 +29,7 @@ const AgentInfo: React.FC<Props> = ({ agent }) => {
     };
 
     return (
-        <div className="agent-info w-full h-full bg-white h-auto md:px-[1.2rem] py-5 px-3 bg-white rounded-lg">
+        <div className="agent-info w-full h-full bg-white h-auto md:px-[1.2rem] py-5 px-3 bg-white rounded-lg" style={{ height: "calc(100vh - 8rem)" }}>
             <h1 className="text-xl font-bold mb-3 text-black">Agent Details</h1>
             <div className="agent-name border border-grey-800 rounded-lg py-2 px-3">
                 <h2 className="text-md font-semibold">Agent Name:</h2>

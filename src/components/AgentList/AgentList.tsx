@@ -54,6 +54,9 @@ const AgentList: React.FC<Props> = ({ agents }) => {
                     </tr>
                 </thead>
                 <tbody>
+                    {agents.length === 0 && <tr>
+                        <td colSpan={4} className="text-black text-center px-4 py-4">No agents found!</td>
+                    </tr>}
                     {agents.map((agent, index) => (
                         <tr className="border-t">
                             <td className="px-4 py-2 text-black md:min-w-[10rem] min-w-[7rem]">{agent.agentName}</td>
