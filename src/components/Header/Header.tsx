@@ -66,7 +66,7 @@ const Header: React.FC<Props> = ({created}) => {
                 </div>
                 <div className="navs flex items-center h-full gap-[2rem] md:flex hidden">
                     <div className="relative create-nav w-auto h-[5rem] flex items-center justify-center cursor-pointer" onClick={() => router.push("/")}>
-                        <h2 className="text-black">Home</h2>
+                        <h2 className="text-black dark:text-black">Home</h2>
                         {pathName === "/" && <div className="absolute w-full bottom-0 h-1 rounded-3xl bg-[#0BB489]">
                         </div>}
                     </div>
@@ -77,7 +77,7 @@ const Header: React.FC<Props> = ({created}) => {
                             router.push(`/playground?agentId=${dataId}`);
                         }
                     }}>
-                        <h2 className="text-black">Playground</h2>
+                        <h2 className="text-black dark:text-black">Playground</h2>
                         {pathName === "/playground" && <div className="absolute w-full bottom-0 h-1 rounded-3xl bg-[#0BB489]">
                         </div>}
                     </div>

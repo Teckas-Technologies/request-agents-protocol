@@ -93,7 +93,7 @@ const SPABody: React.FC<Props> = ({ developerId, created, setCreated }) => {
         <div className="spa-body w-full h-auto flex flex-wrap md:grid md:grid-cols-5 gap-5 md:px-[1.2rem] px-3 py-5 md:pt-[6.2rem] pt-[5.8rem]">
             <div className="left-doc-content w-full md:col-span-2 py-5 md:px-5 px-3 bg-white rounded-lg">
                 <h1 className="text-xl font-bold mb-4">Steps to get an agent:</h1>
-                <h2 className="text-lg font-semibold mb-2">1. Provide the following details:</h2>
+                <h2 className="text-lg dark:text-black font-semibold mb-2">1. Provide the following details:</h2>
                 <ul className="list-disc pl-6 mb-2">
                     <li>
                         <strong>Agent Name:</strong> A descriptive name for your agent (e.g., "Invoice Agent").
@@ -119,7 +119,7 @@ const SPABody: React.FC<Props> = ({ developerId, created, setCreated }) => {
                 <p className="text-base">
                     Click <strong>"Submit"</strong> to create your agent.
                 </p>
-                <h2 className="text-lg text-black font-semibold mt-3 mb-1">2. Integrate the agent into your project:</h2>
+                <h2 className="text-lg dark:text-black text-black font-semibold mt-3 mb-1">2. Integrate the agent into your project:</h2>
                 <p className="text-base mb-2">
                     After submitting the form, you'll receive a script to integrate the agent into your platform. Here's an example:
                 </p>
@@ -149,7 +149,7 @@ const SPABody: React.FC<Props> = ({ developerId, created, setCreated }) => {
             </div>
             <div className="right-create-agent-form w-full md:col-span-3 py-5 md:px-5 px-3 bg-white rounded-lg">
                 <div className="form-box">
-                    <h2 className="text-xl text-left font-bold mb-4 text-black">Create a New Agent</h2>
+                    <h2 className="text-xl dark:text-black text-left font-bold mb-4 text-black">Create a New Agent</h2>
                     <div className="input-field border p-3 rounded-md border-grey-800">
                         <label htmlFor="name" className="text-zinc-700">Agent Name</label>
                         <input
@@ -179,7 +179,7 @@ const SPABody: React.FC<Props> = ({ developerId, created, setCreated }) => {
                             onClick={handleCreateAgent}
                             className={`w-auto bg-[#0BB489] text-white py-2 px-5 rounded-md hover:bg-[#1fbf96] ${disabled && "cursor-not-allowed"}`}
                         >
-                            <h2 className="font-semibold">Submit</h2>
+                            <h2 className="font-semibold ">Submit</h2>
                         </button>
                         {loading && <div className="loading flex items-center gap-2">
                             <div role="status">
@@ -189,7 +189,7 @@ const SPABody: React.FC<Props> = ({ developerId, created, setCreated }) => {
                                 </svg>
                                 <span className="sr-only">Loading...</span>
                             </div>
-                            <h2>Creating your agent...</h2>
+                            <h2 className="dark:text-black">Creating your agent...</h2>
                         </div>}
                     </div>
                 </div>

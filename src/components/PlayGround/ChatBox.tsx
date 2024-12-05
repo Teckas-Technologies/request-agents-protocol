@@ -452,7 +452,7 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                         <div className="rn-logo w-[2rem] h-[2rem] p-2 bg-gray-200 rounded-full">
                             <img src="images/logo-sm.svg" alt="logo" className="w-full h-full object-cover" />
                         </div>
-                        <h2>{agent?.agentName}</h2>
+                        <h2 className="dark:text-black">{agent?.agentName}</h2>
                     </div>
                     <div className="share border border-zinc-900 rounded-md p-1 cursor-pointer" onClick={() => copyToClipboard(agent?.codeSnippet || "")}>
                         <InlineSVG
@@ -505,13 +505,13 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                                                     <span className="sr-only">Loading...</span>
                                                 </div>
                                             </div>}
-                                            <h2 className="text-center text-sm">{isPaying && activePayingId === getHiddenSpanText(msg.message) ? "Paying.." : isApproving && activePayingId === getHiddenSpanText(msg.message) ? "Approving.." : "Pay"}</h2>
+                                            <h2 className="text-center dark:text-black text-sm">{isPaying && activePayingId === getHiddenSpanText(msg.message) ? "Paying.." : isApproving && activePayingId === getHiddenSpanText(msg.message) ? "Approving.." : "Pay"}</h2>
                                         </div>
                                     </>}
                                     {msg.message.includes("<b>Status:</b> Paid") && <>
                                         <a href={`https://scan.request.network/request/${getHiddenSpanText(msg.message)}`} target="_blank" rel="noopener noreferrer">
                                             <div className="approve-btn px-2 py-1 min-w-[5rem] bg-zinc-200 rounded-3xl border-2 border-zinc-200 hover:border-zinc-400 cursor-pointer">
-                                                <h2 className="text-center text-sm">View</h2>
+                                                <h2 className="text-center dark:text-black text-sm">View</h2>
                                             </div>
                                         </a>
                                     </>}
