@@ -116,7 +116,7 @@ const Home = () => {
     <div className="relative min-h-screen w-full pb-10 bg-gray-100 overflow-hidden">
       {/* <Script id="chatbot" data-agent-id="67500d5fd8f7b664f8bc39e8" data-account-id={address} src="https://script-sepia.vercel.app/ChatBot.js"></Script> */}
       <Header created = {created} />
-      <Script id="chatbot" data-agent-id="67518624b0b24db33b575d1b" data-account-id={address} src="https://script-sepia.vercel.app/ChatBot.js"></Script>
+      {/* <Script id="chatbot" data-agent-id="67518624b0b24db33b575d1b" data-account-id={address} src="https://script-sepia.vercel.app/ChatBot.js"></Script> */}
       <SPABody developerId={developerId} created={created} setCreated={setCreated} />
       <div className="agents-section md:px-[7rem] px-3">
         <AgentList agents={agents} />
