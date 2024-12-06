@@ -10,6 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { devId } = req.query;
 
   if (req.method === 'GET') {
+    await connectToDatabase();
     // Fetch all agents for a developer
     try {
       console.log('dev Id:', devId);
@@ -22,6 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === 'POST') {
+    await connectToDatabase();
     if (!developerId || !agentName || !prompt) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -41,6 +43,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // const codeSnippet = `<script src="https://cdn.request-protocol.com/bot.js" data-id="${savedAgent._id}"></script>`;
       savedAgent.codeSnippet = codeSnippet;
       await savedAgent.save();
+
+      console.log("Saved Response:", )
 
       // Prepare data to send to external server
       const externalServerURL = 'https://rnp-master-agent-d2b5etd8cwgzcaer.canadacentral-01.azurewebsites.net/store-agent-spec';
