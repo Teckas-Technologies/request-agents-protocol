@@ -178,6 +178,13 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                 agentId,
             };
 
+            const isAgentExist = await axios.get(`https://rnp-master-agent-d2b5etd8cwgzcaer.canadacentral-01.azurewebsites.net/check-agent?agentId=${agentId}`);
+
+            if (!isAgentExist.data.agent_exists) {
+                setMessages((prev) => [...prev, { sender: "assistant", message: "Wait for 2 seconds! I'm preparing." }]);
+                return;
+            }
+
             // Mock API call, replace with actual API logic
             const response = await axios.post("https://rnp-master-agent-d2b5etd8cwgzcaer.canadacentral-01.azurewebsites.net/voice-backend",
                 requestBody,
@@ -259,7 +266,7 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                     setIsCreating(false);
                     return;
                 }
-            } else if (response.data.data.meta_data.isFetchPaymentRequest) {
+            } else if ((response.data.data.meta_data.isFetchPaymentRequest || response.data.data.intent === "fetchPaymentRequests" || response.data.data.intent === "fetchPaymentRequest") && (!response.data.data.text.includes("assist you") || !response.data.data.text.includes("today"))) {
                 // alert("Fetching");
                 if (!address || !isConnected) {
                     setMessages((prev) => [...prev, { sender: "assistant", message: "Please connect your wallet!" }]);
