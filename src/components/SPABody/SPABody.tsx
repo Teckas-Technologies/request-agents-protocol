@@ -92,7 +92,7 @@ const SPABody: React.FC<Props> = ({ developerId, created, setCreated }) => {
     return (
         <div className="spa-body w-full h-auto flex flex-wrap md:grid md:grid-cols-5 gap-5 md:px-[1.2rem] px-3 py-5 md:pt-[6.2rem] pt-[5.8rem]">
             <div className="left-doc-content w-full md:col-span-2 py-5 md:px-5 px-3 bg-white rounded-lg">
-                <h1 className="text-xl dark:text-black font-bold mb-4">Steps to get an agent:</h1>
+                <h1 className="text-xl dark:text-black font-bold mb-4">Steps to create an agent:</h1>
                 <h2 className="text-lg dark:text-black font-semibold mb-2">1. Provide the following details:</h2>
                 <ul className="list-disc pl-6 mb-2">
                     <li className="dark:text-black">
