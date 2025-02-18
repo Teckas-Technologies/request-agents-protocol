@@ -12,6 +12,7 @@
     "@langchain/community": "^0.3.31",
     "@langchain/core": "^0.3.40",
     "@langchain/langgraph": "^0.2.46",
+    "@langchain/langgraph-checkpoint-mongodb": "^0.0.5",
     "@langchain/openai": "^0.4.4",
     "@metamask/detect-provider": "^2.0.0",
     "@reown/appkit": "^1.1.2",
