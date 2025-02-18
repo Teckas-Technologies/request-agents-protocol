@@ -47,4 +47,28 @@ export const currencies = new Map<string, ICurrency>([
       type: Types.RequestLogic.CURRENCY.ERC20,
     },
   ],
+  [
+    "11155111_0x0EC435037161ACd3bB94eb8DF5BC269f17A4E1b8", // Testing only
+    {
+      name: "Solana",
+      symbol: "SOL",
+      value: "0x0EC435037161ACd3bB94eb8DF5BC269f17A4E1b9",
+      chainId: 11155111,
+      network: "sepolia",
+      decimals: 9,
+      type: Types.RequestLogic.CURRENCY.ERC20,
+    },
+  ],
+  [
+    "11155111_0x370DE27fdb7D1Ff1e1BaA7D11c5820a324Cf623C", // Testing only
+    {
+      name: "Ethereum",
+      symbol: "ETH",
+      value: "0x370DE27fdb7D1Ff1e1BaA7D11c5820a324Cf623D",
+      chainId: 11155111,
+      network: "sepolia",
+      decimals: 18, // 18 is correct TODO. just for test
+      type: Types.RequestLogic.CURRENCY.ETH,
+    },
+  ],
 ]);

@@ -18,21 +18,16 @@ const requestClient = new RequestNetwork({
 
 const createRequest = async ({ recipientAddress, currency, amount, reason }: createRequestToolParams) => {
     try {
-        const parsedAmount = parseUnits(amount, 6);
-
         console.log(recipientAddress, currency, amount, reason);
 
         const data = {
             recipientAddress,
             currency,
-            amount: parsedAmount.toString(), // Ensure it's a string if needed for API, otherwise you can use parsedAmount directly
+            amount,
             reason,
         };
 
-        return {
-            success: true,
-            data, // Return the actual JSON object
-        };
+        return { success: true, type: "create", data };
     } catch (err) {
         console.error(err); // Log error for debugging
         return { success: false, data: null };
@@ -41,31 +36,10 @@ const createRequest = async ({ recipientAddress, currency, amount, reason }: cre
 
 const fetchRequests = async ({ address }: { address: `0x${string}` }) => {
     try {
-        const identityAddress = address;
-        const requests = await requestClient.fromIdentity({
-            type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
-            value: identityAddress as string,
-        });
-        const requestDatas = requests.map((request) => request.getData());
-
-        // Filtering only pending requests (balance < expectedAmount)
-        const pendingRequests = requestDatas.filter((request) => {
-            const balance = request.balance;
-            const expectedAmount = request.expectedAmount;
-
-            if (balance && balance.balance !== null && expectedAmount !== null) {
-                // Convert balance.balance to number if it's a string
-                const balanceAmount = typeof balance.balance === 'string' ? parseFloat(balance.balance) : balance.balance;
-                // Convert expectedAmount to number if it's not already
-                const expectedAmountValue = typeof expectedAmount === 'string' ? parseFloat(expectedAmount) : expectedAmount;
-
-                return balanceAmount < expectedAmountValue;
-            }
-
-            return false; // If balance or expectedAmount is null or invalid, exclude
-        });
-
-        return { success: true, data: pendingRequests };
+        const data = {
+            address
+        }
+        return { success: true, type: "fetch", data };
     } catch (err) {
         console.log("Error while fetching requests:", err);
         return { success: false, data: null }
@@ -75,8 +49,8 @@ const fetchRequests = async ({ address }: { address: `0x${string}` }) => {
 export const createRequestTool = tool(
     async (params: any) => await createRequest(params),  // TODO types issue
     {
-        name: "createRequest",
-        description: "Create request to the recipient to pay the amount to the payee.",
+        name: "create-request",
+        description: "It's just form a json to create request to the recipient to pay the amount to the payee.",
         schema: z.object({
             recipientAddress: z.string().describe("The EVM address of the recipient to use in the request."),
             currency: z.string().describe("The currency of the recipient want to pay in created request. eg. USDT, USDC, ETH, etc..."),
@@ -89,8 +63,8 @@ export const createRequestTool = tool(
 export const fetchRequestsTool = tool(
     async (params: any) => await fetchRequests(params),  // TODO types issue
     {
-        name: "fetchRequests",
-        description: "Fetch all the requests for the user's by EVM address",
+        name: "fetch-requests",
+        description: "It's just form a json to fetch all the requests for the user's by EVM address",
         schema: z.object({
             address: z.string().describe("The EVM address of the user to see the pending payment requests.")
         }),
@@ -115,3 +89,30 @@ const calculateStatus = (
         return "Pending";
     }
 };
+
+
+// const identityAddress = address;
+// const requests = await requestClient.fromIdentity({
+//     type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
+//     value: identityAddress as string,
+// });
+// const requestDatas = requests.map((request) => request.getData());
+
+// // Filtering only pending requests (balance < expectedAmount)
+// const pendingRequests = requestDatas.filter((request) => {
+//     const balance = request.balance;
+//     const expectedAmount = request.expectedAmount;
+
+//     if (balance && balance.balance !== null && expectedAmount !== null) {
+//         // Convert balance.balance to number if it's a string
+//         const balanceAmount = typeof balance.balance === 'string' ? parseFloat(balance.balance) : balance.balance;
+//         // Convert expectedAmount to number if it's not already
+//         const expectedAmountValue = typeof expectedAmount === 'string' ? parseFloat(expectedAmount) : expectedAmount;
+
+//         return balanceAmount < expectedAmountValue;
+//     }
+
+//     return false; // If balance or expectedAmount is null or invalid, exclude
+// });
+
+// return { success: true, data: pendingRequests };
