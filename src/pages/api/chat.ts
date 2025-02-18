@@ -1,53 +1,53 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-// import { connectToDatabase } from '@/lib/mongodb';
-import { MemorySaver } from "@langchain/langgraph";
 import { HumanMessage, SystemMessage, AIMessage, ToolMessage } from "@langchain/core/messages";
 import { ChatOpenAI } from "@langchain/openai";
 import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { StateGraph, MessagesAnnotation } from "@langchain/langgraph";
 import { createRequestTool, fetchRequestsTool } from '@/tools/tools';
 import { fetchAgentById } from '@/db_utils/agentUtils';
-import { AGENT_REGISTRY, loadAgents } from '@/graph/agentGraph';
+import { MongoClient } from "mongodb";
+import { MongoDBSaver } from "@langchain/langgraph-checkpoint-mongodb";
+import { MONGODB_URI } from '@/config/constants';
 
-// const tools = [createRequestTool, fetchRequestsTool];
-// const toolNode = new ToolNode(tools);
+const client = new MongoClient(MONGODB_URI);
+const checkpointer = new MongoDBSaver({ client });
 
-// // Create a model and bind it to tools
-// const model = new ChatOpenAI({
-//     model: "gpt-4o-mini",
-//     temperature: 0,
-//     apiKey: process.env.OPENAI_API_KEY
-// }).bindTools(tools);
+const tools = [createRequestTool, fetchRequestsTool];
+const toolNode = new ToolNode(tools);
 
-// // Initialize memory to persist states between runs
-// const checkpointer = new MemorySaver();
+// Create a model and bind it to tools
+const model = new ChatOpenAI({
+    model: "gpt-4o-mini",
+    temperature: 0,
+    apiKey: process.env.OPENAI_API_KEY
+}).bindTools(tools);
 
-// // Define decision function for the workflow
-// function shouldContinue(state: { messages: (AIMessage | HumanMessage | SystemMessage)[] }) {
-//     const lastMessage = state.messages[state.messages.length - 1] as AIMessage;
+// Define decision function for the workflow
+function shouldContinue(state: { messages: (AIMessage | HumanMessage | SystemMessage)[] }) {
+    const lastMessage = state.messages[state.messages.length - 1] as AIMessage;
 
-//     if (lastMessage.tool_calls?.length) {
-//         return "tools"; // If tools were called, go to tools node
-//     }
-//     return "__end__"; // Otherwise, stop execution
-// }
+    if (lastMessage.tool_calls?.length) {
+        return "tools"; // If tools were called, go to tools node
+    }
+    return "__end__"; // Otherwise, stop execution
+}
 
-// // Function to invoke the AI model
-// async function callModel(state: { messages: (AIMessage | HumanMessage | SystemMessage)[] }) {
-//     const response = await model.invoke([...state.messages]);
-//     return { messages: [...state.messages, response] };
-// }
+// Function to invoke the AI model
+async function callModel(state: { messages: (AIMessage | HumanMessage | SystemMessage)[] }) {
+    const response = await model.invoke([...state.messages]);
+    return { messages: [...state.messages, response] };
+}
 
-// // Define LangGraph Workflow
-// const workflow = new StateGraph(MessagesAnnotation)
-//     .addNode("agent", callModel)
-//     .addEdge("__start__", "agent") // Start point
-//     .addNode("tools", toolNode)
-//     .addEdge("tools", "agent") // Tool execution leads back to agent
-//     .addConditionalEdges("agent", shouldContinue);
+// Define LangGraph Workflow
+const workflow = new StateGraph(MessagesAnnotation)
+    .addNode("agent", callModel)
+    .addEdge("__start__", "agent") // Start point
+    .addNode("tools", toolNode)
+    .addEdge("tools", "agent") // Tool execution leads back to agent
+    .addConditionalEdges("agent", shouldContinue);
 
-// // Compile into a runnable app
-// const app = workflow.compile({ checkpointer: checkpointer });
+// Compile into a runnable app
+const graph = workflow.compile({ checkpointer: checkpointer });
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -55,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(405).json({ error: `Method ${req.method} not allowed` });
     }
 
-    const { agentId, userId, query } = req.body;
+    const { agentId, userId, query, walletAddress } = req.body;
 
     if (!agentId || !userId || !query) {
         return res.status(400).json({ error: 'Missing required fields' });
@@ -68,19 +68,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(404).json({ error: "Agent not found!" });
         }
 
-        const regAgent = AGENT_REGISTRY.find(ragent => ragent.agentName === agent.agentName);
-
-        console.log("REG AG:", regAgent)
-
-        if (!regAgent) {
-            return res.status(404).json({ error: "REG: Agent not found!" });
-        }
-        
-        // const systemMessage = new SystemMessage(`Your name is ${agent?.agentName}. ${agent?.instructions}`);
+        const systemMessage = new SystemMessage(`Your name is ${agent?.agentName}. ${agent?.instructions}.`);
 
         // Execute the agent with the user's query
-        const finalState = await regAgent?.graph?.invoke({
-            messages: [ new HumanMessage(query)],
+        const finalState = await graph?.invoke({
+            messages: [systemMessage, new HumanMessage(query)],
         }, { configurable: { thread_id: userId + "-" + agentId } });
 
         const messages = finalState.messages;

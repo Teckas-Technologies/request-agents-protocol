@@ -4,7 +4,7 @@ import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 
 export interface createRequestToolParams {
-    recipientAddress: string,
+    payerAddress: string,
     currency: string,
     amount: string,
     reason: string
@@ -16,12 +16,12 @@ const requestClient = new RequestNetwork({
     },
 });
 
-const createRequest = async ({ recipientAddress, currency, amount, reason }: createRequestToolParams) => {
+const createRequest = async ({ payerAddress, currency, amount, reason }: createRequestToolParams) => {
     try {
-        console.log(recipientAddress, currency, amount, reason);
+        console.log(payerAddress, currency, amount, reason);
 
         const data = {
-            recipientAddress,
+            payerAddress,
             currency,
             amount,
             reason,
@@ -50,10 +50,10 @@ export const createRequestTool = tool(
     async (params: any) => await createRequest(params),  // TODO types issue
     {
         name: "create-request",
-        description: "It's just form a json to create request to the recipient to pay the amount to the payee.",
+        description: "It's just form a json to create request to initiate process to the payer to pay the amount to the payee.",
         schema: z.object({
-            recipientAddress: z.string().describe("The EVM address of the recipient to use in the request."),
-            currency: z.string().describe("The currency of the recipient want to pay in created request. eg. USDT, USDC, ETH, etc..."),
+            payerAddress: z.string().describe("The EVM address of the payer to use in the request."),
+            currency: z.string().describe("The currency of the payer want to pay in created request. eg. USDT, USDC, ETH, etc..."),
             amount: z.string().describe("The total amount, want to pay to the payee."),
             reason: z.string().describe("Reason for creating request for the payment."),
         }),
@@ -64,7 +64,7 @@ export const fetchRequestsTool = tool(
     async (params: any) => await fetchRequests(params),  // TODO types issue
     {
         name: "fetch-requests",
-        description: "It's just form a json to fetch all the requests for the user's by EVM address",
+        description: "It's just form a json to fetch all the requests for the user's by EVM address.",
         schema: z.object({
             address: z.string().describe("The EVM address of the user to see the pending payment requests.")
         }),

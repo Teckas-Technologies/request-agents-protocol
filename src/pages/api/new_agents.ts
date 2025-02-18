@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createAgent, deleteAgent, fetchAgents, updateAgent } from '@/db_utils/agentUtils';
-import { createAgents } from '@/graph/agentGraph';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
@@ -10,9 +9,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
         if (req.method === 'POST') {
             const { developerId, agentName, instructions } = req.body;
-            const agentGraph = await createAgents(req.body);
-            console.log("Graph:", agentGraph)
-
             const agent = await createAgent(developerId, agentName, instructions);
             return res.status(201).json(agent);
         }
