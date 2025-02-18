@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@langchain/core": "^0.3.40",
+    "@langchain/langgraph": "^0.2.46",
+    "@langchain/openai": "^0.4.4",
     "@metamask/detect-provider": "^2.0.0",
     "@reown/appkit": "^1.1.2",
     "@reown/appkit-adapter-wagmi": "^1.1.2",
