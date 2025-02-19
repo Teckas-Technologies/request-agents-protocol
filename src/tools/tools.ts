@@ -34,15 +34,55 @@ const createRequest = async ({ payerAddress, currency, amount, reason }: createR
     }
 };
 
-const fetchRequests = async ({ address }: { address: `0x${string}` }) => {
+const fetchRequests = async ({ address, page, status }: { address: `0x${string}`, page: number, status: string }) => {
     try {
-        const data = {
-            address
-        }
-        return { success: true, type: "fetch", data };
+        const limit = 5;
+        const identityAddress = address.toLowerCase(); // Normalize address to lowercase for comparison
+
+        console.log(status, page)
+
+        // Fetch all requests for the given identity
+        const requests = await requestClient.fromIdentity({
+            type: Types.Identity.TYPE.ETHEREUM_ADDRESS,
+            value: identityAddress as string,
+        });
+
+        const requestDatas = requests.map((request) => request.getData());
+
+        // Filter requests based on payer address & status
+        let filteredRequests = requestDatas.filter((request) => {
+            const balance = request.balance;
+            const expectedAmount = request.expectedAmount;
+            const payerAddress = request.payer?.value?.toLowerCase(); // Ensure payer address is checked safely
+
+            // Include only requests where the provided address matches the payer's address
+            if (payerAddress !== identityAddress) {
+                return false;
+            }
+
+            if (balance && balance.balance !== null && expectedAmount !== null) {
+                const balanceAmount = typeof balance.balance === 'string' ? parseFloat(balance.balance) : balance.balance;
+                const expectedAmountValue = typeof expectedAmount === 'string' ? parseFloat(expectedAmount) : expectedAmount;
+
+                if (status === "PENDING") {
+                    return balanceAmount < expectedAmountValue;
+                } else if (status === "PAID") {
+                    return balanceAmount >= expectedAmountValue;
+                }
+            }
+
+            return status === "ALL"; // If status is ALL, include all requests
+        });
+
+        // Apply pagination (limit & page number)
+        const startIndex = (page - 1) * limit;
+        const paginatedRequests = filteredRequests.slice(startIndex, startIndex + limit);
+
+        return { success: true, data: paginatedRequests };
+
     } catch (err) {
-        console.log("Error while fetching requests:", err);
-        return { success: false, data: null }
+        console.error("Error while fetching requests:", err);
+        return { success: false, data: null };
     }
 };
 
@@ -64,9 +104,11 @@ export const fetchRequestsTool = tool(
     async (params: any) => await fetchRequests(params),  // TODO types issue
     {
         name: "fetch-requests",
-        description: "It's just form a json to fetch all the requests for the user's by EVM address.",
+        description: "It's just form a json to fetch the requests for the user's by EVM address and status.",
         schema: z.object({
-            address: z.string().describe("The EVM address of the user to see the pending payment requests.")
+            address: z.string().describe("The EVM address of the user to see the pending payment requests."),
+            page: z.number().describe("Page number for the paginated data. Initial page number is 1, If 'next' is 2 like, 'page+1'").default(1),
+            status: z.string().describe("The status of the request. 'PENDING' or 'PAID' or 'ALL'. Default is 'PENDING'").default("PENDING")
         }),
     }
 );

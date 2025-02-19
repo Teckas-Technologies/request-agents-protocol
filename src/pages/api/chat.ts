@@ -32,30 +32,13 @@ function shouldContinue(state: { messages: (AIMessage | HumanMessage | SystemMes
     return "__end__"; // Otherwise, stop execution
 }
 
-// Function to invoke the AI model
-async function callModel(state: { messages: (AIMessage | HumanMessage | SystemMessage)[] }) {
-    const response = await model.invoke([...state.messages]);
-    return { messages: [...state.messages, response] };
-}
-
-// Define LangGraph Workflow
-const workflow = new StateGraph(MessagesAnnotation)
-    .addNode("agent", callModel)
-    .addEdge("__start__", "agent") // Start point
-    .addNode("tools", toolNode)
-    .addEdge("tools", "agent") // Tool execution leads back to agent
-    .addConditionalEdges("agent", shouldContinue);
-
-// Compile into a runnable app
-const graph = workflow.compile({ checkpointer: checkpointer });
-
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: `Method ${req.method} not allowed` });
     }
 
-    const { agentId, userId, query, walletAddress } = req.body;
+    const { agentId, userId, query } = req.body;
 
     if (!agentId || !userId || !query) {
         return res.status(400).json({ error: 'Missing required fields' });
@@ -70,9 +53,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const systemMessage = new SystemMessage(`Your name is ${agent?.agentName}. ${agent?.instructions}.`);
 
+        // Function to invoke the AI model
+        async function callModel(state: { messages: (AIMessage | HumanMessage | SystemMessage)[] }) {
+            const response = await model.invoke([systemMessage, ...state.messages]);
+            return { messages: [...state.messages, response] };
+        }
+
+        // Define LangGraph Workflow
+        const workflow = new StateGraph(MessagesAnnotation)
+            .addNode("agent", callModel)
+            .addEdge("__start__", "agent") // Start point
+            .addNode("tools", toolNode)
+            .addEdge("tools", "agent") // Tool execution leads back to agent
+            .addConditionalEdges("agent", shouldContinue);
+
+        // Compile into a runnable app
+        const graph = workflow.compile({ checkpointer: checkpointer });
+
         // Execute the agent with the user's query
         const finalState = await graph?.invoke({
-            messages: [systemMessage, new HumanMessage(query)],
+            messages: [new HumanMessage(query)],
         }, { configurable: { thread_id: userId + "-" + agentId } });
 
         const messages = finalState.messages;
