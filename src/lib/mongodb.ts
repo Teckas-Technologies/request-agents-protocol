@@ -9,7 +9,7 @@ class Database {
   private static instance: Database;
   private isConnected = false;
 
-  private constructor() {}
+  private constructor() { }
 
   public static getInstance(): Database {
     if (!Database.instance) {
