@@ -1,0 +1,19 @@
+.pg-agent-card {
+    background: linear-gradient(97.55deg, rgba(255, 255, 255, 0.05) 7.3%, rgba(255, 255, 255, 0.1) 92.7%);
+}
+
+.playground-top {
+    border-bottom: 1.25px solid #949494;
+}
+
+.send-box {
+    background: linear-gradient(180deg, #ABBDFE 0%, #B2A1FC 100%);
+}
+
+.select-agents {
+    backdrop-filter: blur(10px)
+}
+
+.close {
+    background: #D9D9D9;
+}

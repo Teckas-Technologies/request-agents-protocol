@@ -39,7 +39,7 @@ const fetchRequests = async ({ address, page, status }: { address: `0x${string}`
         const limit = 5;
         const identityAddress = address.toLowerCase(); // Normalize address to lowercase for comparison
 
-        console.log(status, page)
+        console.log(status, page, address)
 
         // Fetch all requests for the given identity
         const requests = await requestClient.fromIdentity({
@@ -78,13 +78,23 @@ const fetchRequests = async ({ address, page, status }: { address: `0x${string}`
         const startIndex = (page - 1) * limit;
         const paginatedRequests = filteredRequests.slice(startIndex, startIndex + limit);
 
-        return { success: true, data: paginatedRequests };
+        console.log("RES: ", paginatedRequests)
+
+        return { success: true, type: "fetch", data: paginatedRequests };
 
     } catch (err) {
         console.error("Error while fetching requests:", err);
         return { success: false, data: null };
     }
 };
+
+const payRequest = async ({ requestId }: { requestId: string }) => {
+    if(requestId) {
+        return { message: "Payment request initiated.", type: "pay", requestId }
+    } else {
+        return { message: "Request Id is empty.", data: null }
+    }
+}
 
 export const createRequestTool = tool(
     async (params: any) => await createRequest(params),  // TODO types issue
@@ -93,7 +103,7 @@ export const createRequestTool = tool(
         description: "It's just form a json to create request to initiate process to the payer to pay the amount to the payee.",
         schema: z.object({
             payerAddress: z.string().describe("The EVM address of the payer to use in the request."),
-            currency: z.string().describe("The currency of the payer want to pay in created request. eg. USDT, USDC, ETH, etc..."),
+            currency: z.string().describe("The currency of the payer want to pay in created request. eg. FAU, USDC, USDT, etc..."),
             amount: z.string().describe("The total amount, want to pay to the payee."),
             reason: z.string().describe("Reason for creating request for the payment."),
         }),
@@ -109,6 +119,17 @@ export const fetchRequestsTool = tool(
             address: z.string().describe("The EVM address of the user to see the pending payment requests."),
             page: z.number().describe("Page number for the paginated data. Initial page number is 1, If 'next' is 2 like, 'page+1'").default(1),
             status: z.string().describe("The status of the request. 'PENDING' or 'PAID' or 'ALL'. Default is 'PENDING'").default("PENDING")
+        }),
+    }
+);
+
+export const payRequestTool = tool(
+    async (params: any) => await payRequest(params),  // TODO types issue
+    {
+        name: "pay-request",
+        description: "It's just initiate the payment for the requestId which is from the fetched requests.",
+        schema: z.object({
+            requestId: z.string().describe("The Id of the payment request.")
         }),
     }
 );
