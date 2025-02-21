@@ -15,10 +15,12 @@ const agentSchema = new mongoose.Schema<IAgent>({
     agentName: {
         type: String,
         required: true,
+        minlength: [5, 'Agent name must be at least 5 characters long'],
     },
     instructions: {
         type: String,
         required: true,
+        minlength: [250, 'Instructions must be at least 250 characters long'],
     },
     codeSnippet: {
         type: String,

@@ -73,6 +73,14 @@ svg {
   stroke: white !important;
 }
 
+.popup {
+  backdrop-filter: blur(20px)
+}
+
+.pop-top {
+  border-bottom: 1px solid #C5C5C5;
+}
+
 /* Custom scrollbar styles */
 /* .scroll-d::-webkit-scrollbar {
   width: 8px;

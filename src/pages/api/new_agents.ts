@@ -4,7 +4,9 @@ import { createAgent, deleteAgent, fetchAgents, updateAgent } from '@/db_utils/a
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
         if (req.method === 'GET') {
-            const agents = await fetchAgents(req.query.devId as string);
+            const { devId, page, search } = req.query;
+            const pageNumber = page ? parseInt(page as string, 10) : 1;
+            const agents = await fetchAgents(devId as string, pageNumber, search as string);
             return res.status(200).json(agents);
         }
         if (req.method === 'POST') {

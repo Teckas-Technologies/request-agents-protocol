@@ -177,9 +177,9 @@ export const createAgents = async (agentCreationDetails: agentCreation) => {
 export const loadAgents = async () => {
     const agents = await fetchAgents();
 
-    agents.map(async (agent) => {
-        await createAgents({ agentName: agent.agentName, developerId: agent.developerId, instructions: agent.instructions })
-    });
+    // agents?.map(async (agent) => {
+    //     await createAgents({ agentName: agent.agentName, developerId: agent.developerId, instructions: agent.instructions })
+    // });
     console.log("Agents loadded")
 }
 

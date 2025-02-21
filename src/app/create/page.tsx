@@ -7,8 +7,8 @@ import Header from "@/components/v2/Header/Header";
 const CreateAgentPage = () => {
     return (
         <>
-            <Header created={true} />
-            <CreateAgent />
+            <Header />
+            {/* <CreateAgent /> */}
         </>
     )
 }
