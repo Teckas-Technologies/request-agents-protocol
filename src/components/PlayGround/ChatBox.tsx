@@ -247,6 +247,7 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                     payerAddress: payerIdentity.trim(),
                     amount: response.data.data.meta_data.amount.trim(),
                     storageChain: "11155111",
+                    currentDate: "Today", // Need change
                     dueDate: formattedDueDate,
                     reason: response.data.data.meta_data.reason,
                     extra: response.data.data.meta_data.extra

@@ -7,7 +7,7 @@ const PlayGroundPage = () => {
     
     return (
         <>
-            <Header created={true} />
+            <Header />
             <Playground />
         </>
     )

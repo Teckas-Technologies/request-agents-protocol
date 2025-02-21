@@ -1,10 +1,31 @@
 import { connectToDatabase } from '@/lib/mongodb';
 import { Agent } from '@/models/Agent';
 
-export async function fetchAgents(devId?: string) {
+export async function fetchAgents(devId?: string, page: number = 1, search?: string) {
     await connectToDatabase();
+
+    const limit = 5;
+    const skip = (page - 1) * limit; // Calculate offset
+
     try {
-        return devId ? await Agent.find({ developerId: devId }) : await Agent.find();
+        let query: any = {};
+
+        if (devId) {
+            query.developerId = devId;
+        }
+
+        if (search) {
+            query.agentName = { $regex: search, $options: 'i' }; // Case-insensitive search
+        }
+
+        const agents = await Agent.find(query).sort({ createdAt: -1 }).limit(limit).skip(skip);
+        const totalCount = await Agent.countDocuments(query); // Get total count of agents
+
+        return {
+            agents,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page,
+        };
     } catch (err) {
         console.error('Error fetching agents:', err);
         throw new Error('Failed to fetch agents');
@@ -38,7 +59,7 @@ export async function createAgent(developerId: string, agentName: string, instru
     }
     try {
 
-        const existingAgent = await Agent.findOne({ agentName });
+        const existingAgent = await Agent.findOne({ agentName, developerId });
         if (existingAgent) {
             throw new Error('Agent with the same name already exists');
         }
@@ -72,6 +93,7 @@ export async function updateAgent(agentId: string, updateData: any) {
         if (updateData.agentName) {
             const duplicateAgent = await Agent.findOne({
                 agentName: updateData.agentName,
+                developerId: updateData.developerId,
                 _id: { $ne: agentId } // Ensure it's not the same agent being updated
             });
 

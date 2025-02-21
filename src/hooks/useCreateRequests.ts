@@ -17,6 +17,7 @@ interface Data {
     payerAddress: string; // amount receiving address
     amount: string;
     storageChain: string;
+    currentDate: string;
     dueDate: string;
     reason: string;
     extra: any;
@@ -48,6 +49,7 @@ export const useCreateRequest = () => {
         if (!walletClient) {
             setError("No wallet client available.");
             setLoading(false);
+            console.log("No wallet")
             return;
         }
         console.log("WALLET CLI:", walletClient)
