@@ -3,7 +3,7 @@ import { HumanMessage, SystemMessage, AIMessage, ToolMessage } from "@langchain/
 import { ChatOpenAI } from "@langchain/openai";
 import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { StateGraph, MessagesAnnotation } from "@langchain/langgraph";
-import { createRequestTool, fetchRequestsTool } from '@/tools/tools';
+import { createRequestTool, fetchRequestsTool, payRequestTool } from '@/tools/tools';
 import { fetchAgentById } from '@/db_utils/agentUtils';
 import { MongoClient } from "mongodb";
 import { MongoDBSaver } from "@langchain/langgraph-checkpoint-mongodb";
@@ -12,7 +12,7 @@ import { MONGODB_URI } from '@/config/constants';
 const client = new MongoClient(MONGODB_URI);
 const checkpointer = new MongoDBSaver({ client });
 
-const tools = [createRequestTool, fetchRequestsTool];
+const tools = [createRequestTool, fetchRequestsTool, payRequestTool];
 const toolNode = new ToolNode(tools);
 
 // Create a model and bind it to tools
@@ -51,7 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(404).json({ error: "Agent not found!" });
         }
 
-        const systemMessage = new SystemMessage(`Your name is ${agent?.agentName}. ${agent?.instructions}.`);
+        const systemMessage = new SystemMessage(`Your name is ${agent?.agentName}. ${agent?.instructions}. Your goal is to maximize accuracy and effectiveness by leveraging each tool's unique expertise while ensuring smooth workflow execution.`);
 
         // Function to invoke the AI model
         async function callModel(state: { messages: (AIMessage | HumanMessage | SystemMessage)[] }) {

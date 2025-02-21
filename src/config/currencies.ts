@@ -19,7 +19,7 @@ export const currencies = new Map<string, ICurrency>([
       value: "0x370DE27fdb7D1Ff1e1BaA7D11c5820a324Cf623C",
       chainId: 11155111,
       network: "sepolia",
-      decimals: 6, // 18 is correct TODO. just for test
+      decimals: 18, // 18 is correct TODO. just for test
       type: Types.RequestLogic.CURRENCY.ERC20,
     },
   ],
