@@ -2,13 +2,16 @@
 
 import CreateAgent from "@/components/v2/CreateAgent/Createagent";
 import Header from "@/components/v2/Header/Header";
+import { customSwitchNetwork } from "@/contexts/ContextProvider";
 import { useAppKit } from "@reown/appkit/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { useAccount } from "wagmi";
 
 const Home = () => {
   const [openModal, setOpenModal] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const { address } = useAccount()
   const [message, setMessage] = useState("");
   const { open } = useAppKit();
   const router = useRouter();
@@ -38,6 +41,10 @@ const Home = () => {
   const handleConnectWallet = () => {
     open({ view: 'Connect' });
   }
+
+  useEffect(() => {
+    customSwitchNetwork("11155111");
+  }, [address])
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">

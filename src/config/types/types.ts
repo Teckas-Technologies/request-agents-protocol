@@ -4,3 +4,9 @@ export interface Agent {
     instructions: string;
     codeSnippet?: string;
 }
+
+export interface Message {
+    role: "ai" | "human";
+    content: string;
+    requestId?: string;
+}

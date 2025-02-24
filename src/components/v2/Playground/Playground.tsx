@@ -9,7 +9,11 @@ import ChatBox from "./ChatBox";
 import { useAgents } from "@/hooks/useAgents";
 import { useUser } from "@auth0/nextjs-auth0/client";
 
-const Playground: React.FC = () => {
+interface Props {
+    setErrMessage: (e: string) => void;
+}
+
+const Playground: React.FC<Props> = ({ setErrMessage }) => {
     const [selectModal, setSelectModal] = useState(false);
     const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
     const [agents, setAgents] = useState<Agent[]>([]);
@@ -103,7 +107,7 @@ const Playground: React.FC = () => {
                 />
             </div>
             <div className="right-chat md:col-span-8 col-span-12 md:pt-[2rem] md:pb-[2rem] pt-4 pb-[1rem] md:h-auto h-[calc(100vh-12.5rem)]">
-                <ChatBox agent={selectedAgent} />
+                <ChatBox agent={selectedAgent} setErrMessage={setErrMessage} />
             </div>
             {selectModal && (
                 <div className="absolute md:hidden select-agents z-50 h-[100vh] w-full bg-re">

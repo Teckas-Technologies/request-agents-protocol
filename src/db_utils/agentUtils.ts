@@ -10,9 +10,9 @@ export async function fetchAgents(devId?: string, page: number = 1, search?: str
     try {
         let query: any = {};
 
-        if (devId) {
-            query.developerId = devId;
-        }
+        // if (devId) {
+        //     query.developerId = devId;
+        // }
 
         if (search) {
             query.agentName = { $regex: search, $options: 'i' }; // Case-insensitive search
@@ -59,7 +59,7 @@ export async function createAgent(developerId: string, agentName: string, instru
     }
     try {
 
-        const existingAgent = await Agent.findOne({ agentName, developerId });
+        const existingAgent = await Agent.findOne({ agentName }); // developerId
         if (existingAgent) {
             throw new Error('Agent with the same name already exists');
         }
@@ -93,7 +93,7 @@ export async function updateAgent(agentId: string, updateData: any) {
         if (updateData.agentName) {
             const duplicateAgent = await Agent.findOne({
                 agentName: updateData.agentName,
-                developerId: updateData.developerId,
+                // developerId: updateData.developerId,
                 _id: { $ne: agentId } // Ensure it's not the same agent being updated
             });
 

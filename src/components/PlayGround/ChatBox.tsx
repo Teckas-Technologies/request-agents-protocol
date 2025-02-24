@@ -250,7 +250,8 @@ const ChatBox: React.FC<Props> = ({ agent }) => {
                     currentDate: "Today", // Need change
                     dueDate: formattedDueDate,
                     reason: response.data.data.meta_data.reason,
-                    extra: response.data.data.meta_data.extra
+                    extra: response.data.data.meta_data.extra,
+                    agentName: agent?.agentName || "Agent"
                 })
 
                 if (created?.success) {

@@ -22,6 +22,8 @@ const metadata = {
     icons: ['images/request-network-logo.png']
 }
 
+const networks = [mainnet, arbitrum, sepolia];
+
 // Create the modal
 const modal = createAppKit({
     adapters: [wagmiAdapter],
@@ -47,6 +49,19 @@ const modal = createAppKit({
     ],
     themeMode: "dark"
 })
+
+export const customSwitchNetwork = (targetChainId: string) => {
+    const targetChain = networks.find((chain) => chain.id.toString() === targetChainId);
+
+    if (targetChain) {
+        // Dynamically switch to the target network
+        modal.switchNetwork(targetChain);
+        console.log(`Successfully switched to ${targetChain.name}`);
+    } else {
+        console.warn("Unsupported network selected.");
+        return;
+    }
+}
 
 function ContextProvider({ children, cookies }: { children: ReactNode; cookies: string | null }) {
     const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as Config, cookies)

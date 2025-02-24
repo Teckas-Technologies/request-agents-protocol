@@ -21,6 +21,7 @@ interface Data {
     dueDate: string;
     reason: string;
     extra: any;
+    agentName: string;
 }
 
 export enum APP_STATUS {
@@ -100,9 +101,10 @@ export const useCreateRequest = () => {
                 },
                 contentData: {
                     reason: data.reason,
+                    createdDate: data.currentDate,
                     dueDate: data.dueDate,
                     builderId: "teckas-technologies",
-                    createdWith: "MasterAgent",
+                    createdWith: data?.agentName,
                 },
                 signer: {
                     type: Types.Identity.TYPE.ETHEREUM_ADDRESS,

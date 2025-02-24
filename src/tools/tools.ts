@@ -2,6 +2,7 @@ import { parseUnits } from "viem";
 import { RequestNetwork, Types } from "@requestnetwork/request-client.js";
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
+import { currencies } from "@/config/currencies";
 
 export interface createRequestToolParams {
     payerAddress: string,
@@ -34,10 +35,11 @@ const createRequest = async ({ payerAddress, currency, amount, reason }: createR
     }
 };
 
-const fetchRequests = async ({ address, page, status }: { address: `0x${string}`, page: number, status: string }) => {
+const fetchRequests = async ({ address, page, status, agentName }: { address: `0x${string}`, page: number, status: string, agentName: string }) => {
     try {
         const limit = 5;
         const identityAddress = address.toLowerCase(); // Normalize address to lowercase for comparison
+        const currencyDetails = currencies
 
         console.log(status, page, address)
 
@@ -54,11 +56,20 @@ const fetchRequests = async ({ address, page, status }: { address: `0x${string}`
             const balance = request.balance;
             const expectedAmount = request.expectedAmount;
             const payerAddress = request.payer?.value?.toLowerCase(); // Ensure payer address is checked safely
+            const createdWith = request.contentData?.createdWith;
+            console.log("Check: ", balance, expectedAmount, payerAddress, createdWith, agentName)
 
-            // Include only requests where the provided address matches the payer's address
-            if (payerAddress !== identityAddress) {
+            if (agentName && createdWith !== agentName) {
+                console.log("step1 validation")
                 return false;
             }
+
+            // Include only requests where the provided address matches the payer's address
+            if (payerAddress?.trim() !== identityAddress.trim()) {
+                console.log("Addres check: ", payerAddress, identityAddress)
+                return false;
+            }
+            console.log("Passed")
 
             if (balance && balance.balance !== null && expectedAmount !== null) {
                 const balanceAmount = typeof balance.balance === 'string' ? parseFloat(balance.balance) : balance.balance;
@@ -74,11 +85,20 @@ const fetchRequests = async ({ address, page, status }: { address: `0x${string}`
             return status === "ALL"; // If status is ALL, include all requests
         });
 
+        filteredRequests = filteredRequests.map((request) => {
+            const currencyKey = `11155111_${request.currencyInfo.value || ""}`;
+            const currencyInfo = currencies.get(currencyKey);
+            if (currencyInfo) {
+                request.expectedAmount = (parseFloat(request.expectedAmount.toString()) / 10 ** currencyInfo.decimals).toString();
+            }
+            return request;
+        });
+
         // Apply pagination (limit & page number)
         const startIndex = (page - 1) * limit;
         const paginatedRequests = filteredRequests.slice(startIndex, startIndex + limit);
 
-        console.log("RES: ", paginatedRequests)
+        console.log("Requests", paginatedRequests)
 
         return { success: true, type: "fetch", data: paginatedRequests };
 
@@ -90,9 +110,9 @@ const fetchRequests = async ({ address, page, status }: { address: `0x${string}`
 
 const payRequest = async ({ requestId }: { requestId: string }) => {
     if(requestId) {
-        return { message: "Payment request initiated.", type: "pay", requestId }
+        return { success: true, message: "Payment request initiated.", type: "pay", requestId }
     } else {
-        return { message: "Request Id is empty.", data: null }
+        return { success: false, message: "Request Id is empty.", data: null }
     }
 }
 
@@ -100,9 +120,9 @@ export const createRequestTool = tool(
     async (params: any) => await createRequest(params),  // TODO types issue
     {
         name: "create-request",
-        description: "It's just form a json to create request to initiate process to the payer to pay the amount to the payee.",
+        description: "This tool allows a payee (request creator) to initiate a create request for a payer (identified by an EVM address). The request specifies the payer address, amount, currency, and reason for the payment. Ensure all parameters are freshly collected before executing the tool.",
         schema: z.object({
-            payerAddress: z.string().describe("The EVM address of the payer to use in the request."),
+            payerAddress: z.string().describe("The EVM address of the payer to use in the request. ask user to provide payer address."),
             currency: z.string().describe("The currency of the payer want to pay in created request. eg. FAU, USDC, USDT, etc..."),
             amount: z.string().describe("The total amount, want to pay to the payee."),
             reason: z.string().describe("Reason for creating request for the payment."),
@@ -114,11 +134,12 @@ export const fetchRequestsTool = tool(
     async (params: any) => await fetchRequests(params),  // TODO types issue
     {
         name: "fetch-requests",
-        description: "It's just form a json to fetch the requests for the user's by EVM address and status.",
+        description: "It's just form a json to fetch the requests for the user's by EVM address and status. Ensure all parameters are freshly collected before executing the tool.",
         schema: z.object({
             address: z.string().describe("The EVM address of the user to see the pending payment requests."),
             page: z.number().describe("Page number for the paginated data. Initial page number is 1, If 'next' is 2 like, 'page+1'").default(1),
-            status: z.string().describe("The status of the request. 'PENDING' or 'PAID' or 'ALL'. Default is 'PENDING'").default("PENDING")
+            status: z.string().describe("The status of the request. 'PENDING' or 'PAID' or 'ALL'. Default is 'PENDING'").default("PENDING"),
+            agentName: z.string().describe("Name of the agent."),
         }),
     }
 );
@@ -127,7 +148,7 @@ export const payRequestTool = tool(
     async (params: any) => await payRequest(params),  // TODO types issue
     {
         name: "pay-request",
-        description: "It's just initiate the payment for the requestId which is from the fetched requests.",
+        description: "It's just initiate the payment for the requestId which is from the fetched requests. Ensure all parameters are freshly collected before executing the tool.",
         schema: z.object({
             requestId: z.string().describe("The Id of the payment request.")
         }),
