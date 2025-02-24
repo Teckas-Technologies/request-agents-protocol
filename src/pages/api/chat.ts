@@ -51,7 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(404).json({ error: "Agent not found!" });
         }
 
-        const systemMessage = new SystemMessage(`Your name is ${agent?.agentName}. ${agent?.instructions}. Your goal is to maximize accuracy and effectiveness by leveraging each tool's unique expertise while ensuring smooth workflow execution.`);
+        const systemMessage = new SystemMessage(`Your name is ${agent?.agentName}. ${agent?.instructions}. Use html table markdown while showing the list of data. Don't show the requestId to the user. Your goal is to maximize accuracy and effectiveness by leveraging each tool's unique expertise while ensuring smooth workflow execution.`);
 
         // Function to invoke the AI model
         async function callModel(state: { messages: (AIMessage | HumanMessage | SystemMessage)[] }) {

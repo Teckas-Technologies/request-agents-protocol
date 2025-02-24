@@ -68,7 +68,7 @@ body {
   border-radius: 1rem; 
 }
 
-svg {
+.svg-white {
   fill: none !important;
   stroke: white !important;
 }

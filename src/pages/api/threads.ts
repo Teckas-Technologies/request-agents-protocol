@@ -31,10 +31,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             // Map and return only role, content, and id
             const filteredMessages = messages.map((msg: any) => ({
-                role: msg.constructor?.name.replace("Message", "").toLowerCase() || "unknown", // Convert "SystemMessage" -> "system", "HumanMessage" -> "human", etc.
-                content: msg.lc_kwargs.content,
-                id: msg.lc_kwargs.id
-            }));
+                    role: msg.constructor?.name.replace("Message", "").toLowerCase() || "unknown",
+                    content: msg.lc_kwargs.content,
+                    id: msg.lc_kwargs.id
+                }))
+                .filter((msg) => msg.role !== "tool" && msg.content?.trim()); // Exclude tool messages & empty content
+
 
             return res.status(200).json({ messages: filteredMessages });
         }

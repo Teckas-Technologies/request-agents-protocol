@@ -47,7 +47,7 @@ const LeftAgent: React.FC<Props> = ({ listRef, agents, loading, selectedAgent, s
                         <p className="text-[#D9D9D9] text-sm mt-1 truncate-3-lines">{agent.instructions}</p>
                     </div>
                 ))}
-                {loading && <p className="text-white text-center py-2">Loading{agents.length > 0 && "more"} agents...</p>}
+                {loading && <p className="text-white text-center py-2">Loading {agents.length > 0 && "more"} agents...</p>}
                 {!loading && agents.length === 0 && <p className="text-white text-center py-2">No agents found!</p>}
             </div>
         </div>

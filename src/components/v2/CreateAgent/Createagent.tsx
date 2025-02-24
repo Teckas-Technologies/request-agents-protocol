@@ -55,7 +55,7 @@ const CreateAgent: React.FC<Props> = ({ setMessage }) => {
             setMessage("Agent name is missing!");
             return;
         }
-        if(agentName.length < 5) {
+        if (agentName.length < 5) {
             setMessage("Agent name must be at least 5 characters long!");
             return;
         }
@@ -63,7 +63,7 @@ const CreateAgent: React.FC<Props> = ({ setMessage }) => {
             setMessage("Agent instructions are missing!");
             return;
         }
-        if(instructions.length < 250) {
+        if (instructions.length < 250) {
             setMessage("Instructions must be at least 250 characters long!");
             return;
         }
@@ -98,12 +98,12 @@ const CreateAgent: React.FC<Props> = ({ setMessage }) => {
                         <strong className="text-[#ABBDFE]">Agent Name:</strong> A descriptive name for your agent (e.g., "Invoice Agent").
                     </li>
                     <li className="text-white">
-                        <strong className="text-[#ABBDFE]">Agent Prompt:</strong> Instructions for your agent. For example:
+                        <strong className="text-[#ABBDFE]">Agent Instructions:</strong> Instructions for your agent. For example:
                         <div className="relative text-box p-4 mt-2 rounded-md border border-gray-300">
                             <code className="code-content block font-mono whitespace-pre-wrap text-white">
-                                You are an assistant to help users to create an invoice and fetch their invoices. If the user wants to create an invoice, use the create-payment-request tool. If the user wants to fetch their invoices, use the fetch-payment-request tool.
+                                You are an assistant for helping users to interact with Request Network Protocol for Invoicing activities. Use the 'create-request' tool to create an invoice. Use 'fetch-requests' tool to fetch the invoices for the user. Use 'pay-request' tool to pay the invoice.
                             </code>
-                            <div onClick={copyToClipboard} className="copy absolute h-7 w-7 top-2 right-2 border border-zinc-800 flex items-center justify-center rounded-md cursor-pointer">
+                            <div onClick={copyToClipboard} className="copy absolute h-7 w-7 top-2 right-2 border border-white flex items-center justify-center rounded-md cursor-pointer">
                                 <InlineSVG
                                     src={copied ? "images/clipboard.svg" : "images/copy.svg"}
                                     className="fill-current w-4 h-4 text-grey-100"
@@ -113,7 +113,7 @@ const CreateAgent: React.FC<Props> = ({ setMessage }) => {
                     </li>
                 </ul>
                 <p className="text-base text-white">
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Click <strong>"Submit"</strong> to create your agent.
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Click <strong>"Create Agent"</strong> to create your agent.
                 </p>
                 <h2 className="text-lg text-white text-black fw-500 mt-3 mb-1">2. Integrate the agent into your project:</h2>
                 <p className="text-base fw-400 text-white mb-2 ml-6">
@@ -131,14 +131,14 @@ const CreateAgent: React.FC<Props> = ({ setMessage }) => {
                     Replace the <code>data-agent-id</code> with your agent id.
                 </p>
             </div>
-            <div className="create-right md:w-[50%] w-full flex flex-col gap-5 md:pl-[2rem] md:pr-[3.5rem] pl-1 pr-1 py-[2rem]">
+            <div className="create-right md:w-[50%] w-full flex flex-col gap-5 md:pl-[2rem] lg:pr-[3.5rem] pl-1 pr-1 py-[2rem]">
                 <div className="agent-name flex flex-col gap-2 w-full">
                     <h2 className="text-white fw-500 text-lg">Agent Name</h2>
                     <input type="text" placeholder="eg. Invoicing Agent" value={agentName} onChange={(e) => setAgentName(e.target.value)} className="text-[#D9D9D9] w-full px-[1.5rem] py-[0.8rem] bg-transparent border border-[#D9D9D9] rounded-lg" />
                 </div>
                 <div className="agent-instructions flex flex-col gap-2 w-full">
                     <h2 className="text-white fw-500 text-lg">Agent Instructions</h2>
-                    <textarea placeholder="eg. Give some instructions for your agent..." value={instructions} onChange={(e) => setInstructions(e.target.value)} className="text-[#D9D9D9] w-full px-[1.5rem] py-[0.8rem] bg-transparent border border-[#D9D9D9] rounded-lg h-[12rem] resize-none overflow-auto" />
+                    <textarea placeholder="eg. Give some instructions for your agent..." value={instructions} onChange={(e) => setInstructions(e.target.value)} className="text-[#D9D9D9] scroll-d w-full px-[1.5rem] py-[0.8rem] bg-transparent border border-[#D9D9D9] rounded-lg h-[12rem] resize-none overflow-auto" />
                 </div>
                 <div className="create-btns flex items-center gap-3 pt-[1rem]">
                     <div className="discard-btn flex gap-2 items-center justify-center w-[50%] px-6 py-3 rounded-lg cursor-pointer" onClick={discard}>

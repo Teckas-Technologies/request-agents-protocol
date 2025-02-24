@@ -7,6 +7,7 @@ import { providers, ethers } from 'ethers';
 import { useEthersV5Provider } from "@/hooks/use-ethers-v5-provider";
 import { useEthersV5Signer } from "@/hooks/use-ethers-v5-signer";
 import { getPaymentNetworkExtension } from "@requestnetwork/payment-detection";
+import { Message } from "@/config/types/types";
 
 interface Data {
     requestId: string;
@@ -23,7 +24,7 @@ export const useApprove = () => {
     const provider = useEthersV5Provider();
     const signer = useEthersV5Signer();
 
-    const approveRequest = async (data: Data) => {
+    const approveRequest = async ({ requestId }: Data) => {
         if (!address) {
             console.error("No address found!");
             return;
@@ -41,10 +42,14 @@ export const useApprove = () => {
 
         try {
             const _request = await requestClient.fromRequestId(
-                data.requestId,
+                requestId,
             );
             const _requestData = _request.getData();
-            alert(`Checking if payer has sufficient funds...`);
+            if(!_requestData) {
+                console.log("Request Data is not valid!");
+                return;
+            }
+            // alert(`Checking if payer has sufficient funds...`);
             const _hasSufficientFunds = await hasSufficientFunds(
                 {
                     request: _requestData,
@@ -54,20 +59,20 @@ export const useApprove = () => {
                     }
                 }
             );
-            alert(`_hasSufficientFunds = ${_hasSufficientFunds}`);
+            // alert(`_hasSufficientFunds = ${_hasSufficientFunds}`);
             if (!_hasSufficientFunds) {
                 // setStatus(APP_STATUS.REQUEST_CONFIRMED);
                 console.log("Insufficient:", _hasSufficientFunds);
                 return;
             }
             if (getPaymentNetworkExtension(_requestData)?.id === Types.Extension.PAYMENT_NETWORK_ID.ERC20_FEE_PROXY_CONTRACT) {
-                alert(`ERC20 Request detected. Checking approval...`);
+                // alert(`ERC20 Request detected. Checking approval...`);
                 const _hasErc20Approval = await hasErc20Approval(
                     _requestData,
                     address as string,
                     provider,
                 );
-                alert(`_hasErc20Approval = ${_hasErc20Approval}`);
+                // alert(`_hasErc20Approval = ${_hasErc20Approval}`);
                 if (!_hasErc20Approval) {
                     const approvalTx = await approveErc20(_requestData, signer);
                     await approvalTx.wait(2);
@@ -79,7 +84,7 @@ export const useApprove = () => {
             console.error('Error creating request:', error);
             setError('Failed to create request');
             console.log("Error:", error)
-            alert(error);
+            // alert(error);
         } finally {
             setLoading(false);
         }
