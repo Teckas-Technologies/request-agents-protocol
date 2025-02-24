@@ -39,7 +39,6 @@ const fetchRequests = async ({ address, page, status, agentName }: { address: `0
     try {
         const limit = 5;
         const identityAddress = address.toLowerCase(); // Normalize address to lowercase for comparison
-        const currencyDetails = currencies
 
         console.log(status, page, address)
 
@@ -137,7 +136,7 @@ export const fetchRequestsTool = tool(
         description: "It's just form a json to fetch the requests for the user's by EVM address and status. Ensure all parameters are freshly collected before executing the tool.",
         schema: z.object({
             address: z.string().describe("The EVM address of the user to see the pending payment requests."),
-            page: z.number().describe("Page number for the paginated data. Initial page number is 1, If 'next' is 2 like, 'page+1'").default(1),
+            page: z.number().describe("Page number for the paginated data. Initial page number is 1, If 'next' is 2 like, 'page+1'. Don't ask page no to the user.").default(1),
             status: z.string().describe("The status of the request. 'PENDING' or 'PAID' or 'ALL'. Default is 'PENDING'").default("PENDING"),
             agentName: z.string().describe("Name of the agent."),
         }),
