@@ -97,7 +97,7 @@ const ChatBox: React.FC<Props> = ({ agent, setErrMessage }) => {
     };
 
     const handleSend = async () => {
-        if (!address) {
+        if (!address && !isConnected) {
             setErrMessage("Please connect your EVM wallet, before start chat!");
             return;
         }

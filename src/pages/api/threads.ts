@@ -5,7 +5,7 @@ import { MONGODB_URI } from '@/config/constants';
 
 const client = new MongoClient(MONGODB_URI);
 const checkpointer = new MongoDBSaver({ client });
-
+ 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { userId, agentId } = req.query;
     const threadId = userId + "-" + agentId;
