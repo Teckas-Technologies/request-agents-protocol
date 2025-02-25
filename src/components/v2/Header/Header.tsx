@@ -39,10 +39,10 @@ const Header: React.FC<Props> = ({ }) => {
     }
     return (
         <div className="header fixed z-50 w-full bg-[#111521] h-[6.5rem] flex items-center justify-between 2xl:px-[6rem] xl:px-[5rem] md:px-[4.2rem] px-4">
-            <div className="header-left flex items-center justify-start gap-[4rem]">
-                <div className="logo-img flex md:flex-row flex-col md:items-center md:gap-2 gap-0 cursor-pointer" onClick={() => router.push("/")}>
-                    <h2 className="text-white fw-600 text-2xl leading-none">Request</h2>
-                    <h2 className="text-white fw-600 text-2xl leading-none">Agents</h2>
+            <div className="header-left logo-bg flex items-center justify-start gap-[4rem] h-full min-w-[5rem] ">
+                <div className="logo-img flex md:flex-row flex-col md:items-center md:gap-2 gap-0 cursor-pointer px-1" onClick={() => router.push("/")}>
+                    <h2 className="text-white fw-600 text-2xl leading-none neonText">Request</h2>
+                    <h2 className="text-white fw-600 text-2xl leading-none neonText">Agents</h2>
                 </div>
             </div>
             <div className="header-center">
@@ -70,7 +70,6 @@ const Header: React.FC<Props> = ({ }) => {
                 </div>
             </div>
             <div className="header-right flex items-center gap-2">
-                {!user && <a href="/api/auth/login" className="px-10 py-2 rounded-3xl border border-[#0080FF] text-[#0080FF]">Login</a>}
                 <div className="connect-btn flex gap-2 items-center px-6 py-2.5 rounded-lg cursor-pointer" onClick={isConnected && address ? handleViewAccount : handleConnectWallet}>
                     <h2 className="font-medium text-white">{isConnected && address ? "View Account" : "Connect Wallet"}</h2>
                     <img src="/images/right-arrow.png" alt="arrow" className="w-4 h-3.5 object-cover" />
